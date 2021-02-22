@@ -49,7 +49,6 @@ export default function reducer(state: State, action: Action) {
             ? a.getBoundingClientRect().width + gutter.getBoundingClientRect().width + b.getBoundingClientRect().width
             : a.getBoundingClientRect().height + gutter.getBoundingClientRect().height + b.getBoundingClientRect().height
 
-
           const gutterSize = state.direction === SplitDirection.Horizontal
             ? gutter.getBoundingClientRect().width
             : gutter.getBoundingClientRect().height;
