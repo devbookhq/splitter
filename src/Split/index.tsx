@@ -114,8 +114,7 @@ function Split({ direction, children }: SplitProps) {
     pair.gutter.style.cursor = '';
     pair.parent.style.cursor = '';
     document.body.style.cursor = '';
-
-  }, [state.draggingIdx, state.pairs, state.direction]);
+  }, [state.draggingIdx, state.pairs]);
 
   const calculateSizes = React.useCallback((gutterIdx: number) => {
     dispatch({
@@ -134,7 +133,7 @@ function Split({ direction, children }: SplitProps) {
 
   // This method is called on the initial render.
   // It iterates through the all children and make them equal wide.
-  const setInitialSizes = React.useCallback((children: HTMLElement[]) => {
+  const setInitialSizes = React.useCallback((children: HTMLElement[], gutters: HTMLElement[]) => {
     // All children must have common parent.
     const parent = children[0].parentNode;
     if (!parent) throw new Error(`Cannot set initial sizes - parent is undefined.`);
@@ -144,7 +143,10 @@ function Split({ direction, children }: SplitProps) {
     children.forEach((c, idx) => {
       const isFirst = idx === 0;
       const isLast = idx === children.length - 1;
-      const gutterSize = isFirst || isLast ? state.gutterSize / 2 : state.gutterSize;
+
+      const gutter = gutters[isLast ? idx-1 : idx];
+      let gutterSize = gutter.getBoundingClientRect()[state.direction === SplitDirection.Horizontal ? 'width' : 'height'];
+      gutterSize = isFirst || isLast ? gutterSize / 2 : gutterSize;
 
       // '100 / children.length' makes all the children same wide.
       const calc = `calc(${100 / children.length}% - ${gutterSize}px)`;
@@ -154,7 +156,7 @@ function Split({ direction, children }: SplitProps) {
         c.style.height = calc;
       }
     });
-  }, [state.gutterSize, state.direction]);
+  }, [state.direction]);
 
   // Here we actually change the width of children.
   // We convert the element's sizes into percentage
@@ -176,6 +178,7 @@ function Split({ direction, children }: SplitProps) {
 
     const pair = state.pairs[state.draggingIdx];
     if (pair.size === undefined) throw new Error(`Cannot adjust size - 'pair.size' is undefined.`);
+    if (pair.gutterSize === undefined) throw new Error(`Cannot adjust size - 'pair.gutterSize' is undefined.`);
     const percentage = pair.aSizePct + pair.bSizePct;
 
     const aSizePct = (offset / pair.size) * percentage;
@@ -183,7 +186,7 @@ function Split({ direction, children }: SplitProps) {
 
     const isFirst = state.draggingIdx === 0;
     const isLast = state.draggingIdx === state.pairs.length - 1;
-    const { aGutterSize, bGutterSize } = getGutterSizes(state.gutterSize, isFirst, isLast);
+    const { aGutterSize, bGutterSize } = getGutterSizes(pair.gutterSize, isFirst, isLast);
 
     const aCalc = `calc(${aSizePct}% - ${aGutterSize}px)`;
     const bCalc = `calc(${bSizePct}% - ${bGutterSize}px)`;
@@ -194,7 +197,7 @@ function Split({ direction, children }: SplitProps) {
       pair.a.style.height = aCalc;
       pair.b.style.height = bCalc;
     }
-  }, [state.draggingIdx, state.pairs, state.gutterSize, state.direction]);
+  }, [state.draggingIdx, state.pairs, state.direction]);
 
   const drag = React.useCallback((e: MouseEvent) => {
     if (!state.isDragging) return
@@ -203,6 +206,7 @@ function Split({ direction, children }: SplitProps) {
     const pair = state.pairs[state.draggingIdx];
     if (pair.start === undefined) throw new Error(`Cannot drag - 'pair.start' is undefined.`);
     if (pair.size === undefined) throw new Error(`Cannot drag - 'pair.size' is undefined.`);
+    if (pair.gutterSize === undefined) throw new Error(`Cannot drag - 'pair.gutterSize' is undefined.`);
 
     // 'offset' is the width of the 'a' element in a pair.
     let offset = getMousePosition(state.direction, e) - pair.start;
@@ -210,16 +214,16 @@ function Split({ direction, children }: SplitProps) {
     // Limit the maximum and minimum size of resized children.
     // Use hardcoded value, for now.
     const visibleSize = 16;
-    if (offset < state.gutterSize + visibleSize) {
-      offset = state.gutterSize + visibleSize;
+    if (offset < pair.gutterSize + visibleSize) {
+      offset = pair.gutterSize + visibleSize;
     }
 
-    if (offset >= pair.size - (state.gutterSize + visibleSize)) {
-      offset = pair.size - (state.gutterSize + visibleSize);
+    if (offset >= pair.size - (pair.gutterSize + visibleSize)) {
+      offset = pair.size - (pair.gutterSize + visibleSize);
     }
 
     adjustSize(offset);
-  }, [state.gutterSize, state.isDragging, state.draggingIdx, state.pairs, adjustSize, state.direction]);
+  }, [state.isDragging, state.draggingIdx, state.pairs, adjustSize, state.direction]);
 
   function handleGutterMouseDown(gutterIdx: number, e: MouseEvent) {
     e.preventDefault();
@@ -242,10 +246,10 @@ function Split({ direction, children }: SplitProps) {
     if (!childRefs.current || !gutterRefs.current)
       throw new Error(`Cannot create pairs - 'childRefs' or 'gutterRefs' is undefined.`);
 
-    setInitialSizes(childRefs.current.map(el => el.current!));
+    setInitialSizes(childRefs.current.map(el => el.current!), gutterRefs.current.map(el => el.current!));
     // By the time first useEffect runs refs are already set.
     createPairs(childRefs.current.map(el => el.current!), gutterRefs.current.map(el => el.current!));
-  }, []);
+  }, [setInitialSizes, createPairs]);
 
   return (
     <Container dir={state.direction}>

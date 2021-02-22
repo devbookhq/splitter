@@ -3,12 +3,30 @@ import styled from 'styled-components';
 import { SplitDirection } from 'Split';
 
 const Container = styled.div<{ dir?: SplitDirection }>`
+  padding: ${props => props.dir === SplitDirection.Horizontal ? '0 2px' : '2px 0'};
   ${props => props.dir === SplitDirection.Horizontal ? 'height: 100%' : 'width: 100%'};
-  border: 7px solid #808080;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: ${props => props.dir === SplitDirection.Horizontal ? 'column' : 'row'};
+
+  background: #020203;
 
   :hover {
     cursor: ${props => props.dir === SplitDirection.Horizontal ? 'col-resize' : 'row-resize'};
+
+    // Set background to the Dragger.
+    & > * {
+      background: #9995A3;
+    }
   }
+`;
+
+const Dragger = styled.div<{ dir?: SplitDirection }>`
+  width: ${props => props.dir === SplitDirection.Horizontal ? '3' : '24'}px;
+  height: ${props => props.dir === SplitDirection.Horizontal ? '24' : '3'}px;
+  background: #434252;
 `;
 
 interface GutterProps {
@@ -25,7 +43,9 @@ const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
       ref={ref}
       dir={direction}
       onMouseDown={onMouseDown}
-    />
+    >
+      <Dragger dir={direction}/>
+    </Container>
   );
 });
 

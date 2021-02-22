@@ -28,6 +28,7 @@ export default interface Pair {
   start?: number;
   end?: number;
   size?: number;
+  gutterSize?: number;
 
   aSizePct: number;
   bSizePct: number;

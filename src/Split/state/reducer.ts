@@ -9,7 +9,6 @@ export interface State {
   direction: SplitDirection;
   isDragging: boolean;
   draggingIdx?: number; // Index of a gutter that is being dragged.
-  gutterSize: number;
 
   pairs: Pair[];
 }
@@ -50,6 +49,11 @@ export default function reducer(state: State, action: Action) {
             ? a.getBoundingClientRect().width + gutter.getBoundingClientRect().width + b.getBoundingClientRect().width
             : a.getBoundingClientRect().height + gutter.getBoundingClientRect().height + b.getBoundingClientRect().height
 
+
+          const gutterSize = state.direction === SplitDirection.Horizontal
+            ? gutter.getBoundingClientRect().width
+            : gutter.getBoundingClientRect().height;
+
           const pair: Pair = {
             idx: idx-1,
             // TODO: Do we need to have a reference to the whole elements? Aren't indexes enough?
@@ -60,6 +64,7 @@ export default function reducer(state: State, action: Action) {
             start,
             end,
             size,
+            gutterSize,
             // At the start, all elements has the same width.
             aSizePct: 100 / children.length,
             bSizePct: 100 / children.length,
@@ -68,7 +73,6 @@ export default function reducer(state: State, action: Action) {
           pairs.push(pair);
         }
       });
-      console.log('pairs', pairs);
 
       return {
         ...state,
@@ -96,14 +100,16 @@ export default function reducer(state: State, action: Action) {
       const pair = state.pairs[gutterIdx];
 
       const parentSize = getInnerSize(state.direction, pair.parent);
-      if (!parentSize) throw new Error(`Cannot calculate sizes - parent has undefined or zero size: ${parentSize}.`);
+      if (!parentSize) throw new Error(`Cannot calculate sizes - 'pair.parent' has undefined or zero size.`);
+
+      const gutterSize = pair.gutter[state.direction === SplitDirection.Horizontal ? 'clientWidth' : 'clientHeight'];
 
       const isFirst = gutterIdx === 0;
       const isLast = gutterIdx === state.pairs.length - 1;
-      const { aGutterSize, bGutterSize } = getGutterSizes(state.gutterSize, isFirst, isLast);
+      const { aGutterSize, bGutterSize } = getGutterSizes(gutterSize, isFirst, isLast);
 
       let start: number;
-      let end;
+      let end: number;
       let size: number;
       let aSizePct: number;
       let bSizePct: number;
@@ -143,6 +149,7 @@ export default function reducer(state: State, action: Action) {
         size,
         aSizePct,
         bSizePct,
+        gutterSize,
       };
 
       return {
