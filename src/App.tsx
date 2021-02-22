@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import './App.css';
 
-import Split from './Split';
+import Split, {SplitDirection} from './Split';
 // const PanelGroup = require('react-panelgroup').default;
 
 const Container = styled.div`
@@ -10,6 +10,7 @@ const Container = styled.div`
   height: 100%;
   min-width: 800px;
   height: 300px;
+  height: 100%;
   display: flex;
   justify-content: center;
   overflow: auto;
@@ -43,25 +44,30 @@ const TextDiv = styled.div`
 function App() {
   return (
     <Container>
-      <Split>
-        <TextDiv>
-          {[...Array(30)].map(i => (
-            <div key={Math.random()}>
-              This is a left text
-              <br/>
-            </div>
-          ))}
-        </TextDiv>
-        <TextDiv>
-          {[...Array(30)].map(i => (
-            <div key={Math.random()}>
-              This is a left text
-              <br/>
-            </div>
-          ))}
-        </TextDiv>
-        <div>Text 2</div>
-      </Split>
+        <Split>
+          <Split direction={SplitDirection.Vertical}>
+            <TextDiv>
+              {[...Array(30)].map(i => (
+                <div key={Math.random()}>
+                  This is a left text
+                  <br/>
+                </div>
+              ))}
+            </TextDiv>
+            <TextDiv>
+              {[...Array(30)].map(i => (
+                <div key={Math.random()}>
+                  This is a left text
+                  <br/>
+                </div>
+              ))}
+            </TextDiv>
+            <div>Text 1</div>
+          </Split>
+          <div>Text 2</div>
+          <div>Text 3</div>
+          <div>Text 4</div>
+        </Split>
       {/*
       <PanelGroup
         borderColor="green"

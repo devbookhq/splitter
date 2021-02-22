@@ -1,3 +1,4 @@
+import { SplitDirection } from 'Split';
 import { Action, ActionType } from './reducer.actions';
 import Pair from 'Split/pair';
 
@@ -5,6 +6,7 @@ import getInnerSize from 'utils/getInnerSize';
 import getGutterSizes from 'utils/getGutterSize';
 
 export interface State {
+  direction: SplitDirection;
   isDragging: boolean;
   draggingIdx?: number; // Index of a gutter that is being dragged.
   gutterSize: number;
@@ -26,7 +28,7 @@ export default function reducer(state: State, action: Action) {
       // All children must have common parent.
       const parent = children[0].parentNode;
       if (!parent) throw new Error(`Cannot create pairs - parent is undefined.`);
-      const parentSize = getInnerSize(parent as HTMLElement);
+      const parentSize = getInnerSize(state.direction, parent as HTMLElement);
       if (parentSize === undefined) throw new Error(`Cannot create pairs - parent has undefined or zero size: ${parentSize}.`);
 
       const pairs: Pair[] = [];
@@ -36,7 +38,20 @@ export default function reducer(state: State, action: Action) {
           const b = children[idx];
           const gutter = gutters[idx-1];
 
-          const size = a.getBoundingClientRect().width + gutter.getBoundingClientRect().width + b.getBoundingClientRect().width;
+            // TODO: Must be 'top' for a vertical split.
+          const start = state.direction === SplitDirection.Horizontal
+            ? a.getBoundingClientRect().left
+            : a.getBoundingClientRect().top;
+          //
+          // TODO: Must be 'bottom' for a vertical split.
+          const end = state.direction === SplitDirection.Horizontal
+            ? b.getBoundingClientRect().right
+            : b.getBoundingClientRect().bottom;
+
+          // TODO: Must be 'height' for a vertical split.
+          const size = state.direction === SplitDirection.Horizontal
+            ? a.getBoundingClientRect().width + gutter.getBoundingClientRect().width + b.getBoundingClientRect().width
+            : a.getBoundingClientRect().height + gutter.getBoundingClientRect().height + b.getBoundingClientRect().height
 
           const pair: Pair = {
             idx: idx-1,
@@ -45,10 +60,8 @@ export default function reducer(state: State, action: Action) {
             b,
             gutter,
             parent: parent as HTMLElement,
-            // TODO: Must be 'top' for a vertical split.
-            start: a.getBoundingClientRect().left,
-            // TODO: Must be 'bottom' for a vertical split.
-            end: b.getBoundingClientRect().right,
+            start,
+            end,
             size,
             // At the start, all elements has the same width.
             aSizePct: 100 / children.length,
@@ -85,30 +98,56 @@ export default function reducer(state: State, action: Action) {
       const { gutterIdx } = action.payload;
       const pair = state.pairs[gutterIdx];
 
-      const parentSize = getInnerSize(pair.parent);
+      const parentSize = getInnerSize(state.direction, pair.parent);
       if (!parentSize) throw new Error(`Cannot calculate sizes - parent has undefined or zero size: ${parentSize}.`);
 
       const isFirst = gutterIdx === 0;
       const isLast = gutterIdx === state.pairs.length - 1;
       const { aGutterSize, bGutterSize } = getGutterSizes(state.gutterSize, isFirst, isLast);
 
-      // TODO: Must be 'height' for a vertical split.
-      const aSizePct = ((pair.a.getBoundingClientRect().width + aGutterSize) / parentSize) * 100;
-      const bSizePct = ((pair.b.getBoundingClientRect().width + bGutterSize) / parentSize) * 100;
+      let start: number;
+      let end;
+      let size: number;
+      let aSizePct: number;
+      let bSizePct: number;
 
-      // TODO: Must be 'height' for a vertical split.
-      const size =
-        pair.a.getBoundingClientRect().width +
-        aGutterSize +
-        bGutterSize +
-        pair.b.getBoundingClientRect().width;
+      if (state.direction === SplitDirection.Horizontal) {
+        // TODO: Must be 'top' for a verticla split.
+        start = pair.a.getBoundingClientRect().left;
+
+        // TODO: Must be 'bottom' for a vertical split.
+        end = pair.b.getBoundingClientRect().right;
+
+        // TODO: Must be 'height' for a vertical split.
+        aSizePct = ((pair.a.getBoundingClientRect().width + aGutterSize) / parentSize) * 100;
+        bSizePct = ((pair.b.getBoundingClientRect().width + bGutterSize) / parentSize) * 100;
+
+        // TODO: Must be 'height' for a vertical split.
+        size =
+          pair.a.getBoundingClientRect().width +
+          aGutterSize +
+          bGutterSize +
+          pair.b.getBoundingClientRect().width;
+      } else {
+        start = pair.a.getBoundingClientRect().top;
+
+        end = pair.b.getBoundingClientRect().bottom;
+
+        aSizePct = ((pair.a.getBoundingClientRect().height + aGutterSize) / parentSize) * 100;
+        bSizePct = ((pair.b.getBoundingClientRect().height + bGutterSize) / parentSize) * 100;
+
+        // TODO: Must be 'height' for a vertical split.
+        size =
+          pair.a.getBoundingClientRect().height +
+          aGutterSize +
+          bGutterSize +
+          pair.b.getBoundingClientRect().height;
+      }
 
       state.pairs[gutterIdx] = {
         ...pair,
-
-        start: pair.a.getBoundingClientRect().left,
-        // TODO: Must be 'bottom' for a vertical split.
-        end: pair.b.getBoundingClientRect().right,
+        start,
+        end,
         size,
         aSizePct,
         bSizePct,

@@ -1,4 +1,3 @@
-
 import React, {
   useEffect,
   useReducer,
@@ -16,7 +15,12 @@ import { ActionType } from './state/reducer.actions';
 import reducer, { State } from './state/reducer';
 import getGutterSizes from 'utils/getGutterSize';
 
-const Container = styled.div`
+export enum SplitDirection {
+  Horizontal = 'Horizontal',
+  Vertical = 'Vertical',
+}
+
+const Container = styled.div<{ dir: SplitDirection }>`
   /*
   position: relative;
   left: 120px;
@@ -32,6 +36,7 @@ const Container = styled.div`
   width: calc(100%);
 
   display: flex;
+  flex-direction: ${props => props.dir === SplitDirection.Horizontal ? 'row' : 'column'};
   overflow: hidden;
 
   background: yellow;
@@ -43,25 +48,28 @@ const ChildWrapper = styled.div`
   background: blue;
 `;
 
-function getMousePosition(e: MouseEvent) {
-  // TODO: Must be clientY for a vertical split.
-  return e.clientX;
+function getMousePosition(dir: SplitDirection, e: MouseEvent) {
+  if (dir === SplitDirection.Horizontal) return e.clientX;
+  return e.clientY;
 }
 
-const initialState: State = {
+
+const stateInit = (direction: SplitDirection = SplitDirection.Horizontal) => ({
+  direction,
   isDragging: false,
 
   gutterSize: 14,
   pairs: [],
-};
+});
 
 
 interface SplitProps {
+  direction?: SplitDirection;
   children?: React.ReactNode;
 }
 
-function Split({ children }: SplitProps) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+function Split({ direction, children }: SplitProps) {
+  const [state, dispatch] = useReducer(reducer, direction, stateInit);
 
   const childRefs = useRef(
     children && Array.isArray(children)
@@ -107,7 +115,7 @@ function Split({ children }: SplitProps) {
     // All children must have common parent.
     const parent = children[0].parentNode;
     if (!parent) throw new Error(`Cannot set initial sizes - parent is undefined.`);
-    const parentSize = getInnerSize(parent as HTMLElement);
+    const parentSize = getInnerSize(state.direction, parent as HTMLElement);
     if (parentSize === undefined) throw new Error(`Cannot set initial sizes - parent has undefined or zero size: ${parentSize}.`);
 
     children.forEach((c, idx) => {
@@ -116,10 +124,14 @@ function Split({ children }: SplitProps) {
       const gutterSize = isFirst || isLast ? state.gutterSize / 2 : state.gutterSize;
       // '100 / children.length' makes all the children same wide.
       // TODO: Must be 'c.style.height' for a vertical split.
-      c.style.width = `calc(${100 / children.length}% - ${gutterSize}px)`;
+      const calc = `calc(${100 / children.length}% - ${gutterSize}px)`;
+      if (state.direction === SplitDirection.Horizontal) {
+        c.style.width = calc;
+      } else {
+        c.style.height = calc;
+      }
     });
-
-  }, [state.gutterSize]);
+  }, [state.gutterSize, state.direction]);
 
   // Here we actually change the width of children.
   // We convert the element's sizes into percentage
@@ -150,9 +162,17 @@ function Split({ children }: SplitProps) {
     const isLast = state.draggingIdx === state.pairs.length - 1;
     const { aGutterSize, bGutterSize } = getGutterSizes(state.gutterSize, isFirst, isLast);
 
-    pair.a.style.width = `calc(${aSizePct}% - ${aGutterSize}px)`;
-    pair.b.style.width = `calc(${bSizePct}% - ${bGutterSize}px)`;
-  }, [state.draggingIdx, state.pairs, state.gutterSize]);
+    // TODO: Must be 'height' for a vertical split.
+    const aCalc = `calc(${aSizePct}% - ${aGutterSize}px)`;
+    const bCalc = `calc(${bSizePct}% - ${bGutterSize}px)`;
+    if (state.direction === SplitDirection.Horizontal) {
+      pair.a.style.width = aCalc;
+      pair.b.style.width = bCalc;
+    } else {
+      pair.a.style.height = aCalc;
+      pair.b.style.height = bCalc;
+    }
+  }, [state.draggingIdx, state.pairs, state.gutterSize, state.direction]);
 
   const drag = React.useCallback((e: MouseEvent) => {
     if (!state.isDragging) return
@@ -161,10 +181,10 @@ function Split({ children }: SplitProps) {
     const pair = state.pairs[state.draggingIdx];
     if (pair.start === undefined) throw new Error(`Cannot drag - 'pair.start' is undefined.`);
 
-    // 'offset' is the width of the element on the left from a gutter.
-    const offset = getMousePosition(e) - pair.start;
+    // 'offset' is the width of the 'a' element in a pair.
+    const offset = getMousePosition(state.direction, e) - pair.start;
     adjustSize(offset);
-  }, [state.isDragging, state.draggingIdx, state.pairs, adjustSize]);
+  }, [state.isDragging, state.draggingIdx, state.pairs, adjustSize, state.direction]);
 
   function handleGutterMouseDown(gutterIdx: number, e: MouseEvent) {
     e.preventDefault();
@@ -193,13 +213,14 @@ function Split({ children }: SplitProps) {
   }, []);
 
   return (
-    <Container>
+    <Container dir={state.direction}>
       {children && Array.isArray(children) && children.map((c, idx) => (
         <React.Fragment key={idx}>
           <ChildWrapper ref={childRefs.current![idx]}>{c}</ChildWrapper>
           {idx < children.length - 1 &&
             <Gutter
               ref={gutterRefs.current![idx]}
+              direction={state.direction}
               onMouseDown={e => handleGutterMouseDown(idx, e)}
             />
           }
