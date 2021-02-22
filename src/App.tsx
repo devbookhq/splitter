@@ -26,10 +26,18 @@ const Panel = styled.div`
 `;
 */
 
+const Content = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1e+06px;
+  height: 1e+06px;
+`;
+
 const TextDiv = styled.div`
   height: 100%;
   width: 100%;
-  overflow-y: auto;
+  overflow: auto;
 `;
 
 function App() {
@@ -44,10 +52,15 @@ function App() {
             </div>
           ))}
         </TextDiv>
+        <TextDiv>
+          {[...Array(30)].map(i => (
+            <div key={Math.random()}>
+              This is a left text
+              <br/>
+            </div>
+          ))}
+        </TextDiv>
         <div>Text 2</div>
-        <div>Text 3</div>
-        <div>Text 4</div>
-        <div>Text 5</div>
       </Split>
       {/*
       <PanelGroup
