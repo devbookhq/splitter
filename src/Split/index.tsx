@@ -202,11 +202,24 @@ function Split({ direction, children }: SplitProps) {
 
     const pair = state.pairs[state.draggingIdx];
     if (pair.start === undefined) throw new Error(`Cannot drag - 'pair.start' is undefined.`);
+    if (pair.size === undefined) throw new Error(`Cannot drag - 'pair.size' is undefined.`);
 
     // 'offset' is the width of the 'a' element in a pair.
-    const offset = getMousePosition(state.direction, e) - pair.start;
+    let offset = getMousePosition(state.direction, e) - pair.start;
+
+    // Limit the maximum and minimum size of resized children.
+    // Use hardcoded value, for now.
+    const visibleSize = 16;
+    if (offset < state.gutterSize + visibleSize) {
+      offset = state.gutterSize + visibleSize;
+    }
+
+    if (offset >= pair.size - (state.gutterSize + visibleSize)) {
+      offset = pair.size - (state.gutterSize + visibleSize);
+    }
+
     adjustSize(offset);
-  }, [state.isDragging, state.draggingIdx, state.pairs, adjustSize, state.direction]);
+  }, [state.gutterSize, state.isDragging, state.draggingIdx, state.pairs, adjustSize, state.direction]);
 
   function handleGutterMouseDown(gutterIdx: number, e: MouseEvent) {
     e.preventDefault();
