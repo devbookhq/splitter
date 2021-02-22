@@ -38,17 +38,14 @@ export default function reducer(state: State, action: Action) {
           const b = children[idx];
           const gutter = gutters[idx-1];
 
-            // TODO: Must be 'top' for a vertical split.
           const start = state.direction === SplitDirection.Horizontal
             ? a.getBoundingClientRect().left
             : a.getBoundingClientRect().top;
-          //
-          // TODO: Must be 'bottom' for a vertical split.
+
           const end = state.direction === SplitDirection.Horizontal
             ? b.getBoundingClientRect().right
             : b.getBoundingClientRect().bottom;
 
-          // TODO: Must be 'height' for a vertical split.
           const size = state.direction === SplitDirection.Horizontal
             ? a.getBoundingClientRect().width + gutter.getBoundingClientRect().width + b.getBoundingClientRect().width
             : a.getBoundingClientRect().height + gutter.getBoundingClientRect().height + b.getBoundingClientRect().height
@@ -112,17 +109,13 @@ export default function reducer(state: State, action: Action) {
       let bSizePct: number;
 
       if (state.direction === SplitDirection.Horizontal) {
-        // TODO: Must be 'top' for a verticla split.
         start = pair.a.getBoundingClientRect().left;
 
-        // TODO: Must be 'bottom' for a vertical split.
         end = pair.b.getBoundingClientRect().right;
 
-        // TODO: Must be 'height' for a vertical split.
         aSizePct = ((pair.a.getBoundingClientRect().width + aGutterSize) / parentSize) * 100;
         bSizePct = ((pair.b.getBoundingClientRect().width + bGutterSize) / parentSize) * 100;
 
-        // TODO: Must be 'height' for a vertical split.
         size =
           pair.a.getBoundingClientRect().width +
           aGutterSize +
@@ -136,7 +129,6 @@ export default function reducer(state: State, action: Action) {
         aSizePct = ((pair.a.getBoundingClientRect().height + aGutterSize) / parentSize) * 100;
         bSizePct = ((pair.b.getBoundingClientRect().height + bGutterSize) / parentSize) * 100;
 
-        // TODO: Must be 'height' for a vertical split.
         size =
           pair.a.getBoundingClientRect().height +
           aGutterSize +

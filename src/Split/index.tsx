@@ -12,7 +12,7 @@ import useEventListener from 'useEventListener';
 import Gutter from './Gutter';
 
 import { ActionType } from './state/reducer.actions';
-import reducer, { State } from './state/reducer';
+import reducer from './state/reducer';
 import getGutterSizes from 'utils/getGutterSize';
 
 export enum SplitDirection {
@@ -21,38 +21,23 @@ export enum SplitDirection {
 }
 
 const Container = styled.div<{ dir: SplitDirection }>`
-  /*
-  position: relative;
-  left: 120px;
-  height: 150px;
-  width: 350px;
-  */
-
-  width: 100%;
-  width: 700px;
   height: 100%;
-  // height: 428px;
-  height: calc(100%);
-  width: calc(100%);
+  width: 100%;
 
   display: flex;
   flex-direction: ${props => props.dir === SplitDirection.Horizontal ? 'row' : 'column'};
   overflow: hidden;
-
-  background: yellow;
 `;
 
 const ChildWrapper = styled.div`
   height: 100%;
   width: 100%;
-  background: blue;
 `;
 
 function getMousePosition(dir: SplitDirection, e: MouseEvent) {
   if (dir === SplitDirection.Horizontal) return e.clientX;
   return e.clientY;
 }
-
 
 const stateInit = (direction: SplitDirection = SplitDirection.Horizontal) => ({
   direction,
@@ -62,7 +47,6 @@ const stateInit = (direction: SplitDirection = SplitDirection.Horizontal) => ({
   pairs: [],
 });
 
-
 interface SplitProps {
   direction?: SplitDirection;
   children?: React.ReactNode;
@@ -71,11 +55,14 @@ interface SplitProps {
 function Split({ direction, children }: SplitProps) {
   const [state, dispatch] = useReducer(reducer, direction, stateInit);
 
+  // Ref containgin an array of refs.
+  // To access specific ref: 'childRefs.current[idx].current'.
   const childRefs = useRef(
     children && Array.isArray(children)
     ? children.map(() => createRef<HTMLDivElement>())
     : null
   );
+  // The same principle as 'childRefs'.
   const gutterRefs = useRef(
     children && Array.isArray(children)
     ? [...Array(children.length - 1)].map(() => createRef<HTMLDivElement>())
@@ -109,8 +96,10 @@ function Split({ direction, children }: SplitProps) {
       payload: { children, gutters },
     });
   }, []);
+  /////////
 
-  // Iterate through all children and make them equal wide.
+  // This method is called on the initial render.
+  // It iterates through the all children and make them equal wide.
   const setInitialSizes = React.useCallback((children: HTMLElement[]) => {
     // All children must have common parent.
     const parent = children[0].parentNode;
@@ -122,8 +111,8 @@ function Split({ direction, children }: SplitProps) {
       const isFirst = idx === 0;
       const isLast = idx === children.length - 1;
       const gutterSize = isFirst || isLast ? state.gutterSize / 2 : state.gutterSize;
+
       // '100 / children.length' makes all the children same wide.
-      // TODO: Must be 'c.style.height' for a vertical split.
       const calc = `calc(${100 / children.length}% - ${gutterSize}px)`;
       if (state.direction === SplitDirection.Horizontal) {
         c.style.width = calc;
@@ -162,7 +151,6 @@ function Split({ direction, children }: SplitProps) {
     const isLast = state.draggingIdx === state.pairs.length - 1;
     const { aGutterSize, bGutterSize } = getGutterSizes(state.gutterSize, isFirst, isLast);
 
-    // TODO: Must be 'height' for a vertical split.
     const aCalc = `calc(${aSizePct}% - ${aGutterSize}px)`;
     const bCalc = `calc(${bSizePct}% - ${bGutterSize}px)`;
     if (state.direction === SplitDirection.Horizontal) {

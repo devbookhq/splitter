@@ -16,25 +16,6 @@ const Container = styled.div`
   overflow: auto;
 `;
 
-/*
-const Panel = styled.div`
-  margin: 8px;
-  width: 100%;
-  height: 100%;
-  padding: 30px;
-  background: rgba(255, 0, 0, 0.15);
-  overflow-y: auto;
-`;
-*/
-
-const Content = styled.div`
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 1e+06px;
-  height: 1e+06px;
-`;
-
 const TextDiv = styled.div`
   height: 100%;
   width: 100%;
@@ -68,28 +49,6 @@ function App() {
           <div>Text 3</div>
           <div>Text 4</div>
         </Split>
-      {/*
-      <PanelGroup
-        borderColor="green"
-      >
-        <Panel>panel</Panel>
-        <PanelGroup
-          direction="column"
-          borderColor="green"
-        >
-          <Panel>panel</Panel>
-          <PanelGroup
-            borderColor="green"
-          >
-            <Panel>
-              panel
-              <br/>
-            </Panel>
-            <Panel>panel</Panel>
-          </PanelGroup>
-        </PanelGroup>
-      </PanelGroup>
-      */}
     </Container>
   );
 }
