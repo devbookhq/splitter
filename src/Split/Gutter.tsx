@@ -4,8 +4,11 @@ import { SplitDirection } from 'Split';
 
 const Container = styled.div<{ dir?: SplitDirection }>`
   ${props => props.dir === SplitDirection.Horizontal ? 'height: 100%' : 'width: 100%'};
-  // height: 100%;
   border: 7px solid #808080;
+
+  :hover {
+    cursor: ${props => props.dir === SplitDirection.Horizontal ? 'col-resize' : 'row-resize'};
+  }
 `;
 
 interface GutterProps {

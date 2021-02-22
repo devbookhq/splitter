@@ -39,6 +39,11 @@ function getMousePosition(dir: SplitDirection, e: MouseEvent) {
   return e.clientY;
 }
 
+function getCursorIcon(dir: SplitDirection) {
+  if (dir === SplitDirection.Horizontal) return 'col-resize';
+  return 'row-resize';
+}
+
 const stateInit = (direction: SplitDirection = SplitDirection.Horizontal) => ({
   direction,
   isDragging: false,
@@ -75,13 +80,42 @@ function Split({ direction, children }: SplitProps) {
       type: ActionType.StartDragging,
       payload: { gutterIdx },
     });
-  }, []);
+
+    const pair = state.pairs[gutterIdx];
+
+    // Disable selection.
+    pair.a.style.userSelect = 'none';
+    pair.b.style.userSelect = 'none';
+
+    // Set the mouse cursor.
+    // Must be done at multiple levels, nut just for a gutter.
+    // The mouse cursor might move outside of the gutter element.
+    pair.gutter.style.cursor = getCursorIcon(state.direction);
+    pair.parent.style.cursor = getCursorIcon(state.direction);
+    document.body.style.cursor = getCursorIcon(state.direction);
+  }, [state.pairs, state.direction]);
 
   const stopDragging = React.useCallback(() => {
     dispatch({
       type: ActionType.StopDragging,
     });
-  }, []);
+
+    if (state.draggingIdx === undefined) throw new Error(`Could not reset cursor and user-select because 'state.draggingIdx' is undefined.`);
+
+    const pair = state.pairs[state.draggingIdx];
+
+    // Disable selection.
+    pair.a.style.userSelect = '';
+    pair.b.style.userSelect = '';
+
+    // Set the mouse cursor.
+    // Must be done at multiple levels, nut just for a gutter.
+    // The mouse cursor might move outside of the gutter element.
+    pair.gutter.style.cursor = '';
+    pair.parent.style.cursor = '';
+    document.body.style.cursor = '';
+
+  }, [state.draggingIdx, state.pairs, state.direction]);
 
   const calculateSizes = React.useCallback((gutterIdx: number) => {
     dispatch({
