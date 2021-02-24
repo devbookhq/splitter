@@ -1,4 +1,4 @@
-import { SplitDirection } from 'Split';
+import { SplitDirection } from '../index';
 
 export default function getInnerSize(direction: SplitDirection, element: HTMLElement) {
   // Returns undefined if parent element has no layout yet.

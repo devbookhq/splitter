@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { SplitDirection } from 'Split';
+import { SplitDirection } from './index';
 
 const Container = styled.div<{ dir?: SplitDirection }>`
   padding: ${props => props.dir === SplitDirection.Horizontal ? '0 2px' : '2px 0'};

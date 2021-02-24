@@ -1,12 +1,11 @@
-import { SplitDirection } from 'Split';
+import { SplitDirection } from '../index';
 import { Action, ActionType } from './reducer.actions';
-import Pair from 'Split/pair';
+import Pair from '../pair';
 
-import getInnerSize from 'utils/getInnerSize';
-import getGutterSizes from 'utils/getGutterSize';
+import getInnerSize from '../utils/getInnerSize';
+import getGutterSizes from '../utils/getGutterSize';
 
 export interface State {
-  direction: SplitDirection;
   isDragging: boolean;
   draggingIdx?: number; // Index of a gutter that is being dragged.
 
@@ -22,12 +21,12 @@ export default function reducer(state: State, action: Action) {
     // |             |                     |                  |              |
     // -----------------------------------------------------------------------
     case ActionType.CreatePairs: {
-      const { children, gutters } = action.payload;
+      const { direction, children, gutters } = action.payload;
 
       // All children must have common parent.
       const parent = children[0].parentNode;
       if (!parent) throw new Error(`Cannot create pairs - parent is undefined.`);
-      const parentSize = getInnerSize(state.direction, parent as HTMLElement);
+      const parentSize = getInnerSize(direction, parent as HTMLElement);
       if (parentSize === undefined) throw new Error(`Cannot create pairs - parent has undefined or zero size: ${parentSize}.`);
 
       const pairs: Pair[] = [];
@@ -37,19 +36,19 @@ export default function reducer(state: State, action: Action) {
           const b = children[idx];
           const gutter = gutters[idx-1];
 
-          const start = state.direction === SplitDirection.Horizontal
+          const start = direction === SplitDirection.Horizontal
             ? a.getBoundingClientRect().left
             : a.getBoundingClientRect().top;
 
-          const end = state.direction === SplitDirection.Horizontal
+          const end = direction === SplitDirection.Horizontal
             ? b.getBoundingClientRect().right
             : b.getBoundingClientRect().bottom;
 
-          const size = state.direction === SplitDirection.Horizontal
+          const size = direction === SplitDirection.Horizontal
             ? a.getBoundingClientRect().width + gutter.getBoundingClientRect().width + b.getBoundingClientRect().width
             : a.getBoundingClientRect().height + gutter.getBoundingClientRect().height + b.getBoundingClientRect().height
 
-          const gutterSize = state.direction === SplitDirection.Horizontal
+          const gutterSize = direction === SplitDirection.Horizontal
             ? gutter.getBoundingClientRect().width
             : gutter.getBoundingClientRect().height;
 
@@ -95,13 +94,13 @@ export default function reducer(state: State, action: Action) {
     case ActionType.CalculateSizes: {
       // We need to calculate sizes only for the pair
       // that has the moved gutter.
-      const { gutterIdx } = action.payload;
+      const { direction, gutterIdx } = action.payload;
       const pair = state.pairs[gutterIdx];
 
-      const parentSize = getInnerSize(state.direction, pair.parent);
+      const parentSize = getInnerSize(direction, pair.parent);
       if (!parentSize) throw new Error(`Cannot calculate sizes - 'pair.parent' has undefined or zero size.`);
 
-      const gutterSize = pair.gutter[state.direction === SplitDirection.Horizontal ? 'clientWidth' : 'clientHeight'];
+      const gutterSize = pair.gutter[direction === SplitDirection.Horizontal ? 'clientWidth' : 'clientHeight'];
 
       const isFirst = gutterIdx === 0;
       const isLast = gutterIdx === state.pairs.length - 1;
@@ -113,7 +112,7 @@ export default function reducer(state: State, action: Action) {
       let aSizePct: number;
       let bSizePct: number;
 
-      if (state.direction === SplitDirection.Horizontal) {
+      if (direction === SplitDirection.Horizontal) {
         start = pair.a.getBoundingClientRect().left;
 
         end = pair.b.getBoundingClientRect().right;

@@ -1,3 +1,5 @@
+import { SplitDirection } from "index";
+
 export enum ActionType {
   CreatePairs,
   CalculateSizes,
@@ -8,6 +10,7 @@ export enum ActionType {
 export interface CreatePairs {
   type: ActionType.CreatePairs;
   payload: {
+    direction: SplitDirection,
     children: HTMLElement[],
     gutters: HTMLElement[],
   };
@@ -16,6 +19,7 @@ export interface CreatePairs {
 export interface CalculateSizes {
   type: ActionType.CalculateSizes;
   payload: {
+    direction: SplitDirection,
     gutterIdx: number;
   };
 }
