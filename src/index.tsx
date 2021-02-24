@@ -238,7 +238,6 @@ function Split({ direction, children }: SplitProps) {
 
   // Initial setup, runs every time the child views changes.
   useEffect(() => {
-    console.log('>>>>>>>>> REACT SPLIT DIRECTION', direction);
     if (children === undefined) throw new Error(`Cannot initialize split - 'children' are undefined`);
     if (!Array.isArray(children)) throw new Error(`Cannot initialize split - 'children' isn't an array.`);
     if (children.length <= 1)
