@@ -24,9 +24,10 @@ const Container = styled.div<{ dir?: SplitDirection }>`
 `;
 
 const Dragger = styled.div<{ dir?: SplitDirection }>`
-  width: ${props => props.dir === SplitDirection.Horizontal ? '3' : '24'}px;
-  height: ${props => props.dir === SplitDirection.Horizontal ? '24' : '3'}px;
+  width: ${props => props.dir === SplitDirection.Horizontal ? '4' : '24'}px;
+  height: ${props => props.dir === SplitDirection.Horizontal ? '24' : '4'}px;
   background: #434252;
+  border-radius: 2px;
 `;
 
 interface GutterProps {
