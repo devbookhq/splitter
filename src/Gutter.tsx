@@ -16,7 +16,7 @@ const Container = styled.div<{ dir?: SplitDirection }>`
   :hover {
     cursor: ${props => props.dir === SplitDirection.Horizontal ? 'col-resize' : 'row-resize'};
 
-    // Set background to the Dragger.
+    // Set the Dragger background.
     & > * {
       background: #9995A3;
     }

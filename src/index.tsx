@@ -19,6 +19,8 @@ export enum SplitDirection {
   Vertical = 'Vertical',
 }
 
+const DefaultMinSize = 16;
+
 const Container = styled.div<{ dir: SplitDirection }>`
   height: 100%;
   width: 100%;
@@ -53,10 +55,18 @@ const stateInit = (direction: SplitDirection = SplitDirection.Horizontal) => ({
 
 interface SplitProps {
   direction: SplitDirection;
+  minWidth?: number; // In pixels.
+  minHeight?: number; // In pixels.
   children?: React.ReactNode;
 }
 
-function Split({ direction, children }: SplitProps) {
+
+function Split({
+  direction,
+  minWidth,
+  minHeight,
+  children,
+}: SplitProps) {
   const [state, dispatch] = useReducer(reducer, direction, stateInit);
 
   const childRefs = useRef<HTMLElement[]>([]);
@@ -100,7 +110,7 @@ function Split({ direction, children }: SplitProps) {
     pair.b.style.userSelect = '';
 
     // Set the mouse cursor.
-    // Must be done at multiple levels, nut just for a gutter.
+    // Must be done at multiple levels, not just for a gutter.
     // The mouse cursor might move outside of the gutter element.
     pair.gutter.style.cursor = '';
     pair.parent.style.cursor = '';
@@ -194,7 +204,7 @@ function Split({ direction, children }: SplitProps) {
     }
   }, [state.draggingIdx, state.pairs, direction]);
 
-  const drag = React.useCallback((direction: SplitDirection, e: MouseEvent) => {
+  const drag = React.useCallback((e: MouseEvent, direction: SplitDirection, minSize?: number) => {
     if (!state.isDragging) return
     if (state.draggingIdx === undefined) throw new Error(`Cannot drag - 'draggingIdx' is undefined.`);
 
@@ -207,8 +217,8 @@ function Split({ direction, children }: SplitProps) {
     let offset = getMousePosition(direction, e) - pair.start;
 
     // Limit the maximum and minimum size of resized children.
-    // Use hardcoded value, for now.
-    const visibleSize = 16;
+
+    const visibleSize = minSize === undefined ? DefaultMinSize : minSize;
     if (offset < pair.gutterSize + visibleSize) {
       offset = pair.gutterSize + visibleSize;
     }
@@ -233,8 +243,8 @@ function Split({ direction, children }: SplitProps) {
 
   useEventListener('mousemove', (e: MouseEvent) => {
     if (!state.isDragging) return;
-    drag(direction, e);
-  }, [direction, state.isDragging, drag]);
+    drag(e, direction, direction === SplitDirection.Horizontal ? minWidth : minHeight);
+  }, [direction, state.isDragging, drag, minWidth, minHeight]);
 
   // Initial setup, runs every time the child views changes.
   useEffect(() => {
@@ -250,9 +260,9 @@ function Split({ direction, children }: SplitProps) {
     setInitialSizes(direction, childRefs.current, gutterRefs.current);
     createPairs(direction, childRefs.current, gutterRefs.current);
   // The reason 'children' is in the dependency array is that we have to recalculate
-  // the state every time a new child view is deleted or added. So every time the child
-  // views change.
-  // The same goes for 'direction'. We need to recalculate the state if the split direction
+  // the state every time a child view is deleted or added - this is every time the child
+  // views change -> hence the deps array.
+  // The same goes for 'direction'. We need to recalculate the state if the split's direction
   // changes.
   }, [children, direction, setInitialSizes, createPairs]);
 

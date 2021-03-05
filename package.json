@@ -2,11 +2,14 @@
   "name": "@devbookhq/react-split",
   "version": "1.0.1",
   "description": "Create split views like in popular coding editors",
+  "license": "MIT",
+  "homepage": "https://github.com/DevbookHQ/react-split",
   "author": {
     "name": "FoundryLabs, Inc.",
     "email": "hello@usedevbook.com",
     "url": "https://usedevbook.com"
   },
+  "bugs": "https://github.com/DevbookHQ/react-split",
   "repository": {
     "type": "git",
     "url": "https://github.com/DevbookHQ/react-split"
@@ -18,9 +21,9 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "react": ">= 16.8.0 < 2",
-    "react-dom": ">= 16.8.0 < 2",
-    "styled-components": ">= 5.0.0"
+    "react": "^16.0.0-0",
+    "react-dom": "^16.0.0-0",
+    "styled-components": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^12.20.4",
