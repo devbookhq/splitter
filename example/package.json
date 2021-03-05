@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/index.tsx",
   "dependencies": {
-    "@devbookhq/react-split": "^1.0.1",
+    "@devbookhq/splitter": "^1.0.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-scripts": "4.0.3"
