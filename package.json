@@ -1,18 +1,18 @@
 {
-  "name": "@devbookhq/react-split",
+  "name": "@devbookhq/split",
   "version": "1.0.1",
-  "description": "Create split views like in popular coding editors",
+  "description": "Create resizable split views - like in VS Code",
   "license": "MIT",
-  "homepage": "https://github.com/DevbookHQ/react-split",
+  "homepage": "https://github.com/DevbookHQ/splitter",
   "author": {
     "name": "FoundryLabs, Inc.",
     "email": "hello@usedevbook.com",
     "url": "https://usedevbook.com"
   },
-  "bugs": "https://github.com/DevbookHQ/react-split",
+  "bugs": "https://github.com/DevbookHQ/splitter",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DevbookHQ/react-split"
+    "url": "https://github.com/DevbookHQ/splitter"
   },
   "main": "lib/index.js",
   "scripts": {

@@ -1,26 +1,27 @@
-# React Split
-React Split allows you to split views into resizable panels. Similar to Visual Studio Code, for example. It's used in [Devbook](https://usedevbook.com) - A Search Engine for Developers.
+# Splitter
+Splitter is a React component thath allows you to split views into resizable panels. Similar to tabs in Visual Studio Code, for example. It's used in [Devbook](https://usedevbook.com) - A Search Engine for Developers.
 
-Here's a gif of what you can build with react-split:
+Here's a gif of what you can build with Splitter:
 ![](example.gif)
 
-react-split is inspired by [Split.js](https://split.js.org/) and written as 100% functional component:
+Splitter is inspired by [Split.js](https://split.js.org/) and written as 100% functional component:
 - All size calculation is done through CSS using `calc`
+- Fully responsive
 - No dependencies beside React
 - Minimal assumptions about your styling and views
 
 ## Installing
 ```
-npm install @devbookhq/react-split
+npm install @devbookhq/splitter
 # or
-yarn add @devbookhq/react-split
+yarn add @devbookhq/splitter
 ```
 
 ## Usage
 
 ### Horizontal split
 ```tsx
-import ReactSplit, { SplitDirection } from '@devbookhq/react-split'
+import ReactSplit, { SplitDirection } from '@devbookhq/splitter'
 
 function MyComponent() {
   return (
@@ -34,7 +35,7 @@ function MyComponent() {
 
 ### Vertical split
 ```tsx
-import ReactSplit, { SplitDirection } from '@devbookhq/react-split'
+import ReactSplit, { SplitDirection } from '@devbookhq/splitter'
 
 function MyComponent() {
   return (
@@ -48,7 +49,7 @@ function MyComponent() {
 
 ### Nested split
 ```tsx
-import ReactSplit, { SplitDirection } from '@devbookhq/react-split'
+import ReactSplit, { SplitDirection } from '@devbookhq/splitter'
 
 function MyComponent() {
   return (

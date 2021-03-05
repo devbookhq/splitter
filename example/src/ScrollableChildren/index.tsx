@@ -1,6 +1,6 @@
 import TileOverflowX from './TileOverflowX';
 import TileOverflowY from './TileOverflowY';
-import ReactSplit, { SplitDirection } from '@devbookhq/react-split';
+import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 
 function ScrollableChildren() {
   return (

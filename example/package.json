@@ -1,5 +1,5 @@
 {
-  "name": "react-split-simple-example",
+  "name": "splitter-simple-example",
   "version": "1.0.0",
   "main": "src/index.tsx",
   "dependencies": {

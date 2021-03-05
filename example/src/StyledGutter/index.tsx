@@ -1,6 +1,6 @@
 import Tile from '../Tile';
 import './CustomGutter.css';
-import ReactSplit, { SplitDirection } from '@devbookhq/react-split';
+import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 
 function StyledGutter() {
   return (

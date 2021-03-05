@@ -1,5 +1,5 @@
 import Tile from '../Tile';
-import ReactSplit, { SplitDirection } from '@devbookhq/react-split';
+import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
 
 function MinSize() {
   return (
