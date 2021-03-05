@@ -37,4 +37,4 @@ lib
 # compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
-example/**/*/node_modules
+example/node_modules
