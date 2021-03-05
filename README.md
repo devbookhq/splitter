@@ -1,6 +1,5 @@
 # Splitter
 Splitter is a React component that allows you to split views into resizable panels. Similar to tabs in Visual Studio Code, for example. It's used in [Devbook](https://usedevbook.com) - A Search Engine for Developers.
-
 Here's a gif of what you can build with Splitter:
 ![](example.gif)
 
@@ -9,6 +8,8 @@ Splitter is inspired by [Split.js](https://split.js.org/) and written as 100% fu
 - Fully responsive
 - No dependencies beside React and styled-components
 - Minimal assumptions about your styling and views
+
+[CodeSandbox project](https://codesandbox.io/s/devbookhqspliiter-example-l23s4)
 
 ## Installing
 ```
@@ -71,7 +72,7 @@ function MyComponent() {
 To see more examples check out the [examples](#Example) section.
 
 ## Examples
-Check out the [`example`](./example/src/App.tsx) folder or the [CodeSandbox project]().
+Check the [`example`](./example/src/App.tsx) folder or the [CodeSandbox project](https://codesandbox.io/s/devbookhqspliiter-example-l23s4).
 - [Horizontal](./example/src/HorizontalSplit/index.tsx)
 - [Vertical](./example/src/VerticalSplit/index.tsx)
 - [Nested](./example/src/NestedSplit/index.tsx)
