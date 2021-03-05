@@ -5,6 +5,7 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 
+import './index.css';
 import getInnerSize from './utils/getInnerSize';
 import useEventListener from './useEventListener';
 
@@ -295,14 +296,30 @@ function Split({
   }
 
   return (
+    <>
+    {/*
+    <div
+      className={direction === SplitDirection.Horizontal
+        ? '__devbook__splitter-container-horizontal'
+        : '__devbook__splitter-container-vertical'
+      }
+    >
+    */}
     <Container dir={direction}>
       {children && Array.isArray(children) && children.map((c, idx) => (
         <React.Fragment key={idx}>
           <ChildWrapper
             ref={el => addRef(childRefs, el)}
+          >{c}
+          </ChildWrapper>
+          {/*
+          <div
+            className="__devbook__splitter-child-wrapper"
+            ref={el => addRef(childRefs, el)}
           >
             {c}
-          </ChildWrapper>
+          </div>
+          */}
           {/* A gutter is between each two child views. */}
           {idx < children.length - 1 &&
             <Gutter
@@ -315,7 +332,9 @@ function Split({
           }
         </React.Fragment>
       ))}
+    {/*</div>*/}
     </Container>
+    </>
   );
 }
 

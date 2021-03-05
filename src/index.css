@@ -1,0 +1,24 @@
+.__devbook__splitter-container-horizontal {
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  background: blue;
+}
+
+.__devbook__splitter-container-vertical {
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: yellow;
+}
+
+.__devbook__splitter-child-wrapper {
+  height: 100%;
+  width: 100%;
+}
