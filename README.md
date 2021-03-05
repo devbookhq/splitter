@@ -1,7 +1,8 @@
 # React Split
 React Split allows you to split views into resizable panels. Similar to Visual Studio Code, for example. It's used in [Devbook](https://usedevbook.com) - A Search Engine for Developers.
 
-Here's a video of what you can build with react-split:
+Here's a gif of what you can build with react-split:
+![](example.gif)
 
 react-split is inspired by [Split.js](https://split.js.org/) and written as 100% functional component:
 - All size calculation is done through CSS using `calc`
