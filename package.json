@@ -1,5 +1,5 @@
 {
-  "name": "@devbookhq/split",
+  "name": "@devbookhq/splitter",
   "version": "1.0.1",
   "description": "Create resizable split views - like in VS Code",
   "license": "MIT",
