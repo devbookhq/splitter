@@ -31,22 +31,65 @@ const Dragger = styled.div<{ dir?: SplitDirection }>`
 `;
 
 interface GutterProps {
+  className?: string;
+  draggerClassName?: string;
   direction?: SplitDirection;
   onMouseDown?: (e: any) => void;
 }
 
 const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
-  { direction, onMouseDown },
+  {
+    className,
+    draggerClassName,
+    direction,
+    onMouseDown,
+  },
   ref,
 ) => {
   return (
-    <Container
-      ref={ref}
-      dir={direction}
-      onMouseDown={onMouseDown}
-    >
-      <Dragger dir={direction}/>
-    </Container>
+    <>
+      {className &&
+        <div
+          className={className}
+          ref={ref}
+          dir={direction}
+          onMouseDown={onMouseDown}
+        >
+          {draggerClassName &&
+            <div
+              className={draggerClassName}
+              dir={direction}
+            />
+          }
+          {!draggerClassName &&
+            <Dragger
+              dir={direction}
+            />
+          }
+        </div>
+      }
+
+      {!className &&
+        <Container
+          ref={ref}
+          className={className}
+          dir={direction}
+          onMouseDown={onMouseDown}
+        >
+          {draggerClassName &&
+            <div
+              className={draggerClassName}
+              dir={direction}
+            />
+          }
+          {!draggerClassName &&
+            <Dragger
+              dir={direction}
+            />
+          }
+        </Container>
+      }
+    </>
   );
 });
 

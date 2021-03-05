@@ -11,7 +11,7 @@ import useEventListener from './useEventListener';
 import Gutter from './Gutter';
 
 import { ActionType } from './state/reducer.actions';
-import reducer from './state/reducer';
+import reducer, { State } from './state/reducer';
 import getGutterSizes from './utils/getGutterSize';
 
 export enum SplitDirection {
@@ -45,29 +45,39 @@ function getCursorIcon(dir: SplitDirection) {
   return 'row-resize';
 }
 
-const stateInit = (direction: SplitDirection = SplitDirection.Horizontal) => ({
+/*
+const stateInit: State = (direction: SplitDirection = SplitDirection.Horizontal) => ({
   direction,
   isDragging: false,
-
-  gutterSize: 14,
   pairs: [],
 });
+*/
+
+const initialState: State = {
+  isDragging: false,
+  pairs: [],
+}
 
 interface SplitProps {
   direction: SplitDirection;
   minWidth?: number; // In pixels.
   minHeight?: number; // In pixels.
+  initialSizes?: number[]; // In percentage.
+  gutterClassName?: string;
+  draggerClassName?: string;
   children?: React.ReactNode;
 }
-
 
 function Split({
   direction,
   minWidth,
   minHeight,
+  initialSizes,
+  gutterClassName,
+  draggerClassName,
   children,
 }: SplitProps) {
-  const [state, dispatch] = useReducer(reducer, direction, stateInit);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const childRefs = useRef<HTMLElement[]>([]);
   const gutterRefs = useRef<HTMLElement[]>([]);
@@ -134,7 +144,12 @@ function Split({
 
   // This method is called on the initial render.
   // It iterates through the all children and make them equal wide.
-  const setInitialSizes = React.useCallback((direction: SplitDirection, children: HTMLElement[], gutters: HTMLElement[]) => {
+  const setInitialSizes = React.useCallback((
+    direction: SplitDirection,
+    children: HTMLElement[],
+    gutters: HTMLElement[],
+    initialSizes?: number[],
+  ) => {
     // All children must have common parent.
     const parent = children[0].parentNode;
     if (!parent) throw new Error(`Cannot set initial sizes - parent is undefined.`);
@@ -149,8 +164,14 @@ function Split({
       let gutterSize = gutter.getBoundingClientRect()[direction === SplitDirection.Horizontal ? 'width' : 'height'];
       gutterSize = isFirst || isLast ? gutterSize / 2 : gutterSize;
 
-      // '100 / children.length' makes all the children same wide.
-      const calc = `calc(${100 / children.length}% - ${gutterSize}px)`;
+      let calc: string;
+      if (initialSizes && idx < initialSizes.length)  {
+        calc = `calc(${initialSizes[idx]}% - ${gutterSize}px)`;
+      } else {
+        // '100 / children.length' makes all the children same wide.
+        calc = `calc(${100 / children.length}% - ${gutterSize}px)`;
+      }
+
       if (direction === SplitDirection.Horizontal) {
         c.style.width = calc;
         // Reset the child wrapper's height because the direction could have changed.
@@ -257,14 +278,14 @@ function Split({
     if (!childRefs.current || !gutterRefs.current)
       throw new Error(`Cannot create pairs - 'childRefs' or 'gutterRefs' is undefined.`);
 
-    setInitialSizes(direction, childRefs.current, gutterRefs.current);
+    setInitialSizes(direction, childRefs.current, gutterRefs.current, initialSizes);
     createPairs(direction, childRefs.current, gutterRefs.current);
   // The reason 'children' is in the dependency array is that we have to recalculate
   // the state every time a child view is deleted or added - this is every time the child
   // views change -> hence the deps array.
   // The same goes for 'direction'. We need to recalculate the state if the split's direction
   // changes.
-  }, [children, direction, setInitialSizes, createPairs]);
+  }, [children, direction, setInitialSizes, createPairs, initialSizes]);
 
   function addRef(refs: typeof childRefs | typeof gutterRefs, el: any) {
     if (!refs.current) throw new Error(`Can't add element to ref object - ref isn't initialized`);
@@ -286,6 +307,8 @@ function Split({
           {idx < children.length - 1 &&
             <Gutter
               ref={el => addRef(gutterRefs, el)}
+              className={gutterClassName}
+              draggerClassName={draggerClassName}
               direction={direction}
               onMouseDown={e => handleGutterMouseDown(idx, e)}
             />

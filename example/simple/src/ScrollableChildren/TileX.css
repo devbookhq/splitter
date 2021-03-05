@@ -1,13 +1,14 @@
-.tile {
+.tile-x {
   height: 100%;
   width: 100%;
 
   padding: 8px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-top;
+  flex-direction: row;
+  align-items: center;
 
   border-radius: 8px;
   background: #121114;
-}
 
+  overflow-x: auto;
+}

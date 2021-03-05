@@ -1,4 +1,4 @@
-.tile {
+.tile-y {
   height: 100%;
   width: 100%;
 
@@ -9,5 +9,6 @@
 
   border-radius: 8px;
   background: #121114;
-}
 
+  overflow-y: auto;
+}

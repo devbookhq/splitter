@@ -9,6 +9,7 @@
 html,
 body {
   height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
 
@@ -17,7 +18,6 @@ body {
     Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
     "Segoe UI Symbol";
   background: #020203;
-  overflow: hidden;
 }
 
 body {
@@ -28,6 +28,7 @@ body {
 #root {
   margin: 0 auto;
   height: 100%;
+  width: 100%;
 }
 
 
