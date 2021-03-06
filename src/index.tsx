@@ -5,7 +5,6 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 
-import './index.css';
 import getInnerSize from './utils/getInnerSize';
 import useEventListener from './useEventListener';
 
