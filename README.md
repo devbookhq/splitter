@@ -22,48 +22,48 @@ yarn add @devbookhq/splitter
 
 ### Horizontal split
 ```tsx
-import ReactSplit, { SplitDirection } from '@devbookhq/splitter'
+import Splitter, { SplitDirection } from '@devbookhq/splitter'
 
 function MyComponent() {
   return (
-    <ReactSplit direction={SplitDirection.Horizontal}>
+    <Splitter direction={SplitDirection.Horizontal}>
       <div>Tile 1</div>
       <div>Tile 2</div>
-    </ReactSplit>
+    </Splitter>
   );
 }
 ```
 
 ### Vertical split
 ```tsx
-import ReactSplit, { SplitDirection } from '@devbookhq/splitter'
+import Splitter, { SplitDirection } from '@devbookhq/splitter'
 
 function MyComponent() {
   return (
-    <ReactSplit direction={SplitDirection.Vertical}>
+    <Splitter direction={SplitDirection.Vertical}>
       <div>Tile 1</div>
       <div>Tile 2</div>
-    </ReactSplit>
+    </Splitter>
   );
 }
 ```
 
 ### Nested split
 ```tsx
-import ReactSplit, { SplitDirection } from '@devbookhq/splitter'
+import Splitter, { SplitDirection } from '@devbookhq/splitter'
 
 function MyComponent() {
   return (
-    <ReactSplit direction={SplitDirection.Vertical}>
+    <Splitter direction={SplitDirection.Vertical}>
       <div>Tile 1</div>
-      <ReactSplit direction={SplitDirection.Horizontal}>
+      <Splitter direction={SplitDirection.Horizontal}>
         <div>Tile 2</div>
-        <ReactSplit direction={SplitDirection.Vertical}>
+        <Splitter direction={SplitDirection.Vertical}>
           <div>Tile 3</div>
           <div>Tile 4</div>
-        </ReactSplit>
-      </ReactSplit>
-    </ReactSplit>
+        </Splitter>
+      </Splitter>
+    </Splitter>
   );
 }
 ```
