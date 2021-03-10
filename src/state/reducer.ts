@@ -91,6 +91,7 @@ export default function reducer(state: State, action: Action) {
         isDragging: false,
       };
     }
+    // Recalculates the stored sizes based on the actual elements' sizes.
     case ActionType.CalculateSizes: {
       // We need to calculate sizes only for the pair
       // that has the moved gutter.

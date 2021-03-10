@@ -66,6 +66,7 @@ interface SplitProps {
   gutterClassName?: string;
   draggerClassName?: string;
   children?: React.ReactNode;
+  onDidResize?: (pairIdx: number, newSizes: number[]) => void;
 }
 
 function Split({
@@ -76,6 +77,7 @@ function Split({
   gutterClassName,
   draggerClassName,
   children,
+  onDidResize,
 }: SplitProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -111,9 +113,32 @@ function Split({
       type: ActionType.StopDragging,
     });
 
-    if (state.draggingIdx === undefined) throw new Error(`Could not reset cursor and user-select because 'state.draggingIdx' is undefined.`);
+    // The callback receives an index of the resized pair and new sizes of all child elements.
+    const allSizes: number[] = [];
+    for (let idx = 0; idx < state.pairs.length; idx++) {
+      const pair = state.pairs[idx];
+      const parentSize = getInnerSize(direction, pair.parent);
+      if (parentSize === undefined) throw new Error(`Cannot call the 'onDidResize' callback - parentSize is undefined.`);
+      if (pair.gutterSize === undefined) throw new Error(`Cannot call 'onDidResize' callback - gutterSize is undefined.`);
 
+      const isFirst = idx === 0;
+      const isLast = idx === state.pairs.length - 1;
+
+      const aSize = pair.a.getBoundingClientRect()[direction === SplitDirection.Horizontal ? 'width' : 'height'];
+      const { aGutterSize, bGutterSize } = getGutterSizes(pair.gutterSize, isFirst, isLast);
+      const aSizePct = ((aSize + aGutterSize) / parentSize) * 100;
+      allSizes.push(aSizePct);
+
+      if (isLast) {
+        const bSize = pair.b.getBoundingClientRect()[direction === SplitDirection.Horizontal ? 'width' : 'height'];
+        const bSizePct = ((bSize + bGutterSize) / parentSize) * 100;
+        allSizes.push(bSizePct);
+      }
+    }
+
+    if (state.draggingIdx === undefined) throw new Error(`Could not reset cursor and user-select because 'state.draggingIdx' is undefined.`);
     const pair = state.pairs[state.draggingIdx];
+    onDidResize?.(pair.idx, allSizes);
 
     // Disable selection.
     pair.a.style.userSelect = '';
@@ -125,7 +150,7 @@ function Split({
     pair.gutter.style.cursor = '';
     pair.parent.style.cursor = '';
     document.body.style.cursor = '';
-  }, [state.draggingIdx, state.pairs]);
+  }, [state.draggingIdx, state.pairs, direction]);
 
   const calculateSizes = React.useCallback((direction: SplitDirection, gutterIdx: number) => {
     dispatch({
@@ -237,7 +262,7 @@ function Split({
     // 'offset' is the width of the 'a' element in a pair.
     let offset = getMousePosition(direction, e) - pair.start;
 
-    // Limit the maximum and minimum size of resized children.
+    // Limit the maximum size and the minimum size of resized children.
 
     const visibleSize = minSize === undefined ? DefaultMinSize : minSize;
     if (offset < pair.gutterSize + visibleSize) {
@@ -259,6 +284,9 @@ function Split({
 
   useEventListener('mouseup', () => {
     if (!state.isDragging) return;
+    if (state.draggingIdx === undefined)
+      throw new Error(`Cannot calculate sizes after dragging = 'state.draggingIdx' is undefined`);
+    calculateSizes(direction, state.draggingIdx);
     stopDragging();
   }, [state.isDragging, stopDragging]);
 

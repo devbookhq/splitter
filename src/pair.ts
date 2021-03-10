@@ -30,6 +30,7 @@ export default interface Pair {
   size?: number;
   gutterSize?: number;
 
+  // Size relative to the size of the pair.
   aSizePct: number;
   bSizePct: number;
 }
