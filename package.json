@@ -17,7 +17,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "rollup -c",
-    "start": "rollup -c -w"
+    "watch": "rollup -c -w"
   },
   "dependencies": {},
   "peerDependencies": {
