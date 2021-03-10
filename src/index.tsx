@@ -143,7 +143,7 @@ function Split({
   /////////
 
   // This method is called on the initial render.
-  // It iterates through the all children and make them equal wide.
+  // It iterates through the all children sets their initial sizes.
   const setInitialSizes = React.useCallback((
     direction: SplitDirection,
     children: HTMLElement[],
@@ -154,7 +154,7 @@ function Split({
     const parent = children[0].parentNode;
     if (!parent) throw new Error(`Cannot set initial sizes - parent is undefined.`);
     const parentSize = getInnerSize(direction, parent as HTMLElement);
-    if (parentSize === undefined) throw new Error(`Cannot set initial sizes - parent has undefined or zero size: ${parentSize}.`);
+    if (parentSize === undefined) throw new Error(`Cannot set initial sizes - parent has undefined size.`);
 
     children.forEach((c, idx) => {
       const isFirst = idx === 0;
