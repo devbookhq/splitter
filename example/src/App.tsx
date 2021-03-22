@@ -9,6 +9,7 @@ import StyledGutter from './StyledGutter';
 import MinSize from './MinSize';
 import InitialSizes from './InitialSizes';
 import ScrollableChildren from './ScrollableChildren';
+import OnDidResizeSplit from './OnDidResize';
 
 enum Page {
   Horizontal,
@@ -18,6 +19,7 @@ enum Page {
   MinSize,
   InitialSizes,
   ScrollableChildren,
+  OnDidResize,
 }
 
 function App() {
@@ -33,6 +35,7 @@ function App() {
         <button onClick={() => setPage(Page.MinSize)}>Minimal tile size</button>
         <button onClick={() => setPage(Page.InitialSizes)}>Initial tile sizes</button>
         <button onClick={() => setPage(Page.ScrollableChildren)}>Scrollable tiles</button>
+        <button onClick={() => setPage(Page.OnDidResize)}>On size change</button>
       </div>
 
       <div className="splits">
@@ -59,6 +62,9 @@ function App() {
             <p>Just make sure the parent element ('.splits' in App.css) has set max-height/max-width in px</p>
             <ScrollableChildren/>
           </>
+        }
+        {page === Page.OnDidResize &&
+          <OnDidResizeSplit />
         }
       </div>
     </div>

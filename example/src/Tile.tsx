@@ -1,9 +1,14 @@
+import React from 'react';
 import './Tile.css';
 
-function Tile() {
+interface TileProps {
+  children?: React.ReactNode;
+}
+
+function Tile({ children }: TileProps) {
   return (
     <div className="tile">
-      A tile
+      {children}
     </div>
   );
 }
