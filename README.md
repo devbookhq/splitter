@@ -68,6 +68,26 @@ function MyComponent() {
 }
 ```
 
+### Get sizes of tiles
+```tsx
+import Splitter, { SplitDirection } from '@devbookhq/splitter'
+
+function MyComponent() {
+  function handleResize(gutterIdx: number, allSizes: number[]) {
+    console.log('Resized!', gutterIdx, allSizes);
+  }
+
+  return (
+    <Splitter
+      direction={SplitDirection.Vertical}
+      onDidResize={handleResize}
+    >
+      <div>Tile 1</div>
+      <div>Tile 2</div>
+    </Splitter>
+  );
+}
+```
 
 To see more examples check out the [examples](#Example) section.
 
@@ -80,4 +100,5 @@ Check the [`example`](./example/src/App.tsx) folder or the [CodeSandbox project]
 - [Minimal tile size](./example/src/MinSize/index.tsx)
 - [Initial tile sizes](./example/src/InitialSizes/index.tsx)
 - [Scrollable tiles](./example/src/ScrollableChildren/index.tsx)
+- [Get sizes of tiles](./example/src/OnDidResize/index.tsx)
 
