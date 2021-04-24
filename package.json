@@ -1,6 +1,6 @@
 {
   "name": "@devbookhq/splitter",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Create resizable split views - like in VS Code",
   "license": "MIT",
   "homepage": "https://github.com/DevbookHQ/splitter",
@@ -19,7 +19,6 @@
     "build": "rollup -c",
     "watch": "rollup -c -w"
   },
-  "dependencies": {},
   "peerDependencies": {
     "react": "^16.0.0-0",
     "react-dom": "^16.0.0-0",
