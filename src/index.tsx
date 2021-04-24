@@ -212,7 +212,7 @@ function Split({
   // Here we actually change the width of children.
   // We convert the element's sizes into percentage
   // and let the CSS 'calc' function do the heavy lifting.
-  // Size of 'a' is same as 'offset'.
+  // Size of 'pair.a' is same as 'offset'.
   //
   // For just 2 children total, the percentage adds up always to 100.
   // For >2 children total, the percentage adds to less than 100.
@@ -295,9 +295,9 @@ function Split({
     drag(e, direction, direction === SplitDirection.Horizontal ? minWidth : minHeight);
   }, [direction, state.isDragging, drag, minWidth, minHeight]);
 
-  // Initial setup, runs every time the child views changes.
+  // Initial setup, runs every time the child views change.
   useEffect(() => {
-    if (children === undefined) throw new Error(`Cannot initialize split - 'children' are undefined`);
+    if (children === undefined) throw new Error(`Cannot initialize split - 'children' is undefined`);
     if (!Array.isArray(children)) throw new Error(`Cannot initialize split - 'children' isn't an array.`);
     if (children.length <= 1)
       throw new Error(`Cannot initialize split - the 'children' array has 1 or less elements. Provide at least 2 child views for the split.`);
@@ -308,12 +308,7 @@ function Split({
 
     setInitialSizes(direction, childRefs.current, gutterRefs.current, initialSizes);
     createPairs(direction, childRefs.current, gutterRefs.current);
-  // The reason 'children' is in the dependency array is that we have to recalculate
-  // the state every time a child view is deleted or added - this is every time the child
-  // views change -> hence the deps array.
-  // The same goes for 'direction'. We need to recalculate the state if the split's direction
-  // changes.
-  }, [children, direction, setInitialSizes, createPairs, initialSizes]);
+  }, [direction, setInitialSizes, createPairs, initialSizes]);
 
   function addRef(refs: typeof childRefs | typeof gutterRefs, el: any) {
     if (!refs.current) throw new Error(`Can't add element to ref object - ref isn't initialized`);
