@@ -20,8 +20,8 @@
     "watch": "rollup -c -w"
   },
   "peerDependencies": {
-    "react": "^16.0.0-0",
-    "react-dom": "^16.0.0-0",
+    "react": "*",
+    "react-dom": "*",
     "styled-components": "^5.0.0"
   },
   "devDependencies": {
