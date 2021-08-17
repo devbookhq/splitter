@@ -19,6 +19,11 @@ export enum SplitDirection {
   Vertical = 'Vertical',
 }
 
+export enum GutterTheme {
+  Light = 'Light',
+  Dark = 'Dark',
+}
+
 const DefaultMinSize = 16;
 
 const Container = styled.div<{ dir: SplitDirection }>`
@@ -63,6 +68,7 @@ interface SplitProps {
   minWidth?: number; // In pixels.
   minHeight?: number; // In pixels.
   initialSizes?: number[]; // In percentage.
+  gutterTheme?: GutterTheme;
   gutterClassName?: string;
   draggerClassName?: string;
   children?: React.ReactNode;
@@ -74,6 +80,7 @@ function Split({
   minWidth,
   minHeight,
   initialSizes,
+  gutterTheme = GutterTheme.Dark,
   gutterClassName,
   draggerClassName,
   children,
@@ -347,6 +354,7 @@ function Split({
             <Gutter
               ref={el => addRef(gutterRefs, el)}
               className={gutterClassName}
+              theme={gutterTheme}
               draggerClassName={draggerClassName}
               direction={direction}
               onMouseDown={e => handleGutterMouseDown(idx, e)}

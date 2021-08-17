@@ -1,6 +1,6 @@
 {
   "name": "@devbookhq/splitter",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Create resizable split views - like in VS Code",
   "license": "MIT",
   "homepage": "https://github.com/DevbookHQ/splitter",
@@ -16,6 +16,7 @@
   },
   "main": "lib/index.js",
   "scripts": {
+    "prepublishOnly": "rollup -c",
     "build": "rollup -c",
     "watch": "rollup -c -w"
   },
@@ -34,6 +35,7 @@
     "babel-core": "^6.26.3",
     "babel-runtime": "^6.26.0",
     "postcss": "^8.2.7",
+    "rollup": "^2.56.2",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-postcss": "^4.0.0",
     "rollup-plugin-terser": "^7.0.2",

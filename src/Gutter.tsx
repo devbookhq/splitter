@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { SplitDirection } from './index';
+import { SplitDirection, GutterTheme } from './index';
 
-const Container = styled.div<{ dir?: SplitDirection }>`
+const Container = styled.div<{ dir?: SplitDirection, theme?: GutterTheme }>`
   padding: ${props => props.dir === SplitDirection.Horizontal ? '0 2px' : '2px 0'};
   ${props => props.dir === SplitDirection.Horizontal ? 'height: 100%' : 'width: 100%'};
 
@@ -11,27 +11,28 @@ const Container = styled.div<{ dir?: SplitDirection }>`
   justify-content: center;
   flex-direction: ${props => props.dir === SplitDirection.Horizontal ? 'column' : 'row'};
 
-  background: #020203;
+  background: ${props => props.theme === GutterTheme.Dark ? '#020203' : '#EDF0EF'};
 
   :hover {
     cursor: ${props => props.dir === SplitDirection.Horizontal ? 'col-resize' : 'row-resize'};
 
     // Set the Dragger background.
     & > * {
-      background: #9995A3;
+      background: ${props => props.theme === GutterTheme.Dark ? '#9995A3' : '#76747B'};
     }
   }
 `;
 
-const Dragger = styled.div<{ dir?: SplitDirection }>`
+const Dragger = styled.div<{ dir?: SplitDirection, theme?: GutterTheme }>`
   width: ${props => props.dir === SplitDirection.Horizontal ? '4' : '24'}px;
   height: ${props => props.dir === SplitDirection.Horizontal ? '24' : '4'}px;
-  background: #434252;
+  background: ${props => props.theme === GutterTheme.Dark ? '#434252' : '#A6ACB5'};
   border-radius: 2px;
 `;
 
 interface GutterProps {
   className?: string;
+  theme?: GutterTheme;
   draggerClassName?: string;
   direction?: SplitDirection;
   onMouseDown?: (e: any) => void;
@@ -40,12 +41,19 @@ interface GutterProps {
 const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
   {
     className,
+    theme,
     draggerClassName,
     direction,
     onMouseDown,
   },
   ref,
 ) => {
+  const DraggerEl = () => (
+    <Dragger
+      dir={direction}
+      theme={theme}
+    />
+  )
   return (
     <>
       {className &&
@@ -62,9 +70,7 @@ const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
             />
           }
           {!draggerClassName &&
-            <Dragger
-              dir={direction}
-            />
+            <DraggerEl />
           }
         </div>
       }
@@ -75,6 +81,7 @@ const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
           className={className}
           dir={direction}
           onMouseDown={onMouseDown}
+          theme={theme}
         >
           {draggerClassName &&
             <div
@@ -83,9 +90,7 @@ const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
             />
           }
           {!draggerClassName &&
-            <Dragger
-              dir={direction}
-            />
+            <DraggerEl />
           }
         </Container>
       }
