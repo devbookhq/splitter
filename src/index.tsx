@@ -73,6 +73,7 @@ interface SplitProps {
   draggerClassName?: string;
   children?: React.ReactNode;
   onDidResize?: (pairIdx: number, newSizes: number[]) => void;
+  classes?: string[];
 }
 
 function Split({
@@ -85,6 +86,7 @@ function Split({
   draggerClassName,
   children,
   onDidResize,
+  classes = [],
 }: SplitProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -339,6 +341,7 @@ function Split({
         <React.Fragment key={idx}>
           <ChildWrapper
             ref={el => addRef(childRefs, el)}
+            className={idx < classes.length ? classes[idx] : ''}
           >{c}
           </ChildWrapper>
           {/*
