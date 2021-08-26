@@ -65,8 +65,8 @@ const initialState: State = {
 
 interface SplitProps {
   direction: SplitDirection;
-  minWidth?: number; // In pixels.
-  minHeight?: number; // In pixels.
+  minWidths?: number[]; // In pixels.
+  minHeights?: number[]; // In pixels.
   initialSizes?: number[]; // In percentage.
   gutterTheme?: GutterTheme;
   gutterClassName?: string;
@@ -78,8 +78,8 @@ interface SplitProps {
 
 function Split({
   direction,
-  minWidth,
-  minHeight,
+  minWidths = [],
+  minHeights = [],
   initialSizes,
   gutterTheme = GutterTheme.Dark,
   gutterClassName,
@@ -259,7 +259,7 @@ function Split({
     }
   }, [state.draggingIdx, state.pairs, direction]);
 
-  const drag = React.useCallback((e: MouseEvent, direction: SplitDirection, minSize?: number) => {
+  const drag = React.useCallback((e: MouseEvent, direction: SplitDirection, minSizes?: number[]) => {
     if (!state.isDragging) return
     if (state.draggingIdx === undefined) throw new Error(`Cannot drag - 'draggingIdx' is undefined.`);
 
@@ -273,7 +273,7 @@ function Split({
 
     // Limit the maximum size and the minimum size of resized children.
 
-    const visibleSize = minSize === undefined ? DefaultMinSize : minSize;
+    const visibleSize = minSizes === undefined ? DefaultMinSize : minSizes[state.draggingIdx];
     if (offset < pair.gutterSize + visibleSize) {
       offset = pair.gutterSize + visibleSize;
     }
@@ -301,8 +301,8 @@ function Split({
 
   useEventListener('mousemove', (e: MouseEvent) => {
     if (!state.isDragging) return;
-    drag(e, direction, direction === SplitDirection.Horizontal ? minWidth : minHeight);
-  }, [direction, state.isDragging, drag, minWidth, minHeight]);
+    drag(e, direction, direction === SplitDirection.Horizontal ? minWidths : minHeights);
+  }, [direction, state.isDragging, drag, minWidths, minHeights]);
 
   // Initial setup, runs every time the child views change.
   useEffect(() => {

@@ -5,12 +5,12 @@ function MinSize() {
   return (
     <ReactSplit
       direction={SplitDirection.Horizontal}
-      minWidth={300} // In pixels.
+      minWidths={[300, 300]} // In pixels.
     >
       <Tile/>
       <ReactSplit
         direction={SplitDirection.Vertical}
-        minHeight={100} // In pixels.
+        minHeights={[100, 100]} // In pixels.
       >
         <Tile/>
         <Tile/>
