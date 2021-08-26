@@ -282,7 +282,8 @@ function Split({
       bMinSize = minSizes[state.draggingIdx + 1];
     }
 
-    //const visibleSize = minSizes === undefined ? DefaultMinSize : minSizes[state.draggingIdx];
+    // TODO: We should check whether the parent is big enough
+    // to support these min sizes.
     if (offset < pair.gutterSize + aMinSize) {
       offset = pair.gutterSize + aMinSize;
     }
