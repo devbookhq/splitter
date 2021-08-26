@@ -259,7 +259,7 @@ function Split({
     }
   }, [state.draggingIdx, state.pairs, direction]);
 
-  const drag = React.useCallback((e: MouseEvent, direction: SplitDirection, minSizes?: number[]) => {
+  const drag = React.useCallback((e: MouseEvent, direction: SplitDirection, minSizes: number[]) => {
     if (!state.isDragging) return
     if (state.draggingIdx === undefined) throw new Error(`Cannot drag - 'draggingIdx' is undefined.`);
 
@@ -273,13 +273,22 @@ function Split({
 
     // Limit the maximum size and the minimum size of resized children.
 
-    const visibleSize = minSizes === undefined ? DefaultMinSize : minSizes[state.draggingIdx];
-    if (offset < pair.gutterSize + visibleSize) {
-      offset = pair.gutterSize + visibleSize;
+    let aMinSize = DefaultMinSize;
+    let bMinSize = DefaultMinSize;
+    if (minSizes.length > state.draggingIdx) {
+      aMinSize = minSizes[state.draggingIdx];
+    }
+    if (minSizes.length >= state.draggingIdx + 1) {
+      bMinSize = minSizes[state.draggingIdx + 1];
     }
 
-    if (offset >= pair.size - (pair.gutterSize + visibleSize)) {
-      offset = pair.size - (pair.gutterSize + visibleSize);
+    //const visibleSize = minSizes === undefined ? DefaultMinSize : minSizes[state.draggingIdx];
+    if (offset < pair.gutterSize + aMinSize) {
+      offset = pair.gutterSize + aMinSize;
+    }
+
+    if (offset >= pair.size - (pair.gutterSize + bMinSize)) {
+      offset = pair.size - (pair.gutterSize + bMinSize);
     }
 
     adjustSize(direction, offset);
