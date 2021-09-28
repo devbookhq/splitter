@@ -1,13 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "lib",
-    "module": "esnext",
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "target": "esnext",
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -26,5 +20,9 @@
   "include": [
     "src"
   ],
-  "exclude": ["node_modules", "lib", "rollup.config.js"]
+  "exclude": [
+    "node_modules",
+    "lib",
+    "rollup.config.js"
+  ]
 }

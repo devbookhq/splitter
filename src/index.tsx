@@ -72,7 +72,8 @@ interface SplitProps {
   gutterClassName?: string;
   draggerClassName?: string;
   children?: React.ReactNode;
-  onDidResize?: (pairIdx: number, newSizes: number[]) => void;
+  onResizeStarted?: (pairIdx: number) => void;
+  onResizeFinished?: (pairIdx: number, newSizes: number[]) => void;
   classes?: string[];
 }
 
@@ -85,7 +86,8 @@ function Split({
   gutterClassName,
   draggerClassName,
   children,
-  onDidResize,
+  onResizeStarted,
+  onResizeFinished,
   classes = [],
 }: SplitProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -104,6 +106,7 @@ function Split({
     });
 
     const pair = state.pairs[gutterIdx];
+    onResizeStarted?.(pair.idx)
 
     // Disable selection.
     pair.a.style.userSelect = 'none';
@@ -127,8 +130,8 @@ function Split({
     for (let idx = 0; idx < state.pairs.length; idx++) {
       const pair = state.pairs[idx];
       const parentSize = getInnerSize(direction, pair.parent);
-      if (parentSize === undefined) throw new Error(`Cannot call the 'onDidResize' callback - parentSize is undefined.`);
-      if (pair.gutterSize === undefined) throw new Error(`Cannot call 'onDidResize' callback - gutterSize is undefined.`);
+      if (parentSize === undefined) throw new Error(`Cannot call the 'onResizeFinished' callback - parentSize is undefined.`);
+      if (pair.gutterSize === undefined) throw new Error(`Cannot call 'onResizeFinished' callback - gutterSize is undefined.`);
 
       const isFirst = idx === 0;
       const isLast = idx === state.pairs.length - 1;
@@ -147,7 +150,7 @@ function Split({
 
     if (state.draggingIdx === undefined) throw new Error(`Could not reset cursor and user-select because 'state.draggingIdx' is undefined.`);
     const pair = state.pairs[state.draggingIdx];
-    onDidResize?.(pair.idx, allSizes);
+    onResizeFinished?.(pair.idx, allSizes);
 
     // Disable selection.
     pair.a.style.userSelect = '';
