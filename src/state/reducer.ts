@@ -6,6 +6,8 @@ import getInnerSize from '../utils/getInnerSize';
 import getGutterSizes from '../utils/getGutterSize';
 
 export interface State {
+  isReady: boolean;
+
   isDragging: boolean;
   draggingIdx?: number; // Index of a gutter that is being dragged.
 
@@ -14,6 +16,12 @@ export interface State {
 
 export default function reducer(state: State, action: Action) {
   switch (action.type) {
+    case ActionType.SetIsReadyToCompute: {
+      return {
+        ...state,
+        isReady: action.payload.isReady,
+      }
+    }
     // -----------------------------------------------------------------------
     // |     i=0     |         i=1         |        i=2       |      i=3     |
     // |             |                     |                  |              |

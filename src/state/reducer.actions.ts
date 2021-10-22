@@ -1,10 +1,18 @@
-import { SplitDirection } from "index";
+import { SplitDirection } from 'index';
 
 export enum ActionType {
+  SetIsReadyToCompute,
   CreatePairs,
   CalculateSizes,
   StartDragging,
   StopDragging,
+}
+
+export interface SetIsReadyToCompute {
+  type: ActionType.SetIsReadyToCompute;
+  payload: {
+    isReady: boolean,
+  };
 }
 
 export interface CreatePairs {
@@ -35,7 +43,8 @@ interface StopDragging {
   type: ActionType.StopDragging;
 }
 
-export type Action = CreatePairs
+export type Action = SetIsReadyToCompute
+  | CreatePairs
   | CalculateSizes
   | StartDragging
   | StopDragging;

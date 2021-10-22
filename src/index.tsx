@@ -59,6 +59,7 @@ const stateInit: State = (direction: SplitDirection = SplitDirection.Horizontal)
 */
 
 const initialState: State = {
+  isReady: false,
   isDragging: false,
   pairs: [],
 }
@@ -92,6 +93,7 @@ function Split({
 }: SplitProps) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const containerRef = useRef<HTMLDivElement>(null)
   const childRefs = useRef<HTMLElement[]>([]);
   const gutterRefs = useRef<HTMLElement[]>([]);
   // We want to reset refs on each re-render so they don't contain old references.
@@ -99,6 +101,13 @@ function Split({
   gutterRefs.current = [];
 
   // Helper dispatch functions.
+  const setIsRenderToCompute = React.useCallback((isReady: boolean) => {
+    dispatch({
+      type: ActionType.SetIsReadyToCompute,
+      payload: { isReady },
+    })
+  }, [])
+
   const startDragging = React.useCallback((direction: SplitDirection, gutterIdx: number) => {
     dispatch({
       type: ActionType.StartDragging,
@@ -317,6 +326,17 @@ function Split({
     drag(e, direction, direction === SplitDirection.Horizontal ? minWidths : minHeights);
   }, [direction, state.isDragging, drag, minWidths, minHeights]);
 
+  useEffect(() => {
+    if (!containerRef.current) return
+    const { current } = containerRef
+
+    const style = getComputedStyle(current)
+    const size = direction === SplitDirection.Horizontal ? current.clientWidth : current.clientHeight
+    const isReady = !!style && !!size
+
+    setIsRenderToCompute(isReady)
+  }, [containerRef.current, direction])
+
   // Initial setup, runs every time the child views change.
   useEffect(() => {
     if (children === undefined) throw new Error(`Cannot initialize split - 'children' is undefined`);
@@ -349,37 +369,42 @@ function Split({
       }
     >
     */}
-    <Container dir={direction}>
-      {children && Array.isArray(children) && children.map((c, idx) => (
-        <React.Fragment key={idx}>
-          <ChildWrapper
-            ref={el => addRef(childRefs, el)}
-            className={idx < classes.length ? classes[idx] : ''}
-          >{c}
-          </ChildWrapper>
-          {/*
-          <div
-            className="__devbook__splitter-child-wrapper"
-            ref={el => addRef(childRefs, el)}
-          >
-            {c}
-          </div>
-          */}
-          {/* A gutter is between each two child views. */}
-          {idx < children.length - 1 &&
-            <Gutter
-              ref={el => addRef(gutterRefs, el)}
-              className={gutterClassName}
-              theme={gutterTheme}
-              draggerClassName={draggerClassName}
-              direction={direction}
-              onMouseDown={e => handleGutterMouseDown(idx, e)}
-            />
-          }
-        </React.Fragment>
-      ))}
-    {/*</div>*/}
-    </Container>
+    {state.isReady && (
+      <Container
+        ref={containerRef}
+        dir={direction}
+      >
+        {children && Array.isArray(children) && children.map((c, idx) => (
+          <React.Fragment key={idx}>
+            <ChildWrapper
+              ref={el => addRef(childRefs, el)}
+              className={idx < classes.length ? classes[idx] : ''}
+            >{c}
+            </ChildWrapper>
+            {/*
+            <div
+              className="__devbook__splitter-child-wrapper"
+              ref={el => addRef(childRefs, el)}
+            >
+              {c}
+            </div>
+            */}
+            {/* A gutter is between each two child views. */}
+            {idx < children.length - 1 &&
+              <Gutter
+                ref={el => addRef(gutterRefs, el)}
+                className={gutterClassName}
+                theme={gutterTheme}
+                draggerClassName={draggerClassName}
+                direction={direction}
+                onMouseDown={e => handleGutterMouseDown(idx, e)}
+              />
+            }
+          </React.Fragment>
+        ))}
+      {/*</div>*/}
+      </Container>
+    )}
     </>
   );
 }
