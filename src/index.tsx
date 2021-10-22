@@ -1,5 +1,6 @@
 import React, {
   useEffect,
+  useLayoutEffect,
   useReducer,
   useRef,
 } from 'react';
@@ -326,19 +327,39 @@ function Split({
     drag(e, direction, direction === SplitDirection.Horizontal ? minWidths : minHeights);
   }, [direction, state.isDragging, drag, minWidths, minHeights]);
 
-  useEffect(() => {
-    if (!containerRef.current) return
-    const { current } = containerRef
+  // This makes sure that Splitter properly re-renders if parent's size changes dynamically.  
+  useEffect(function watchParentSize() {    
+    if (!containerRef.current) return    
+    const el = containerRef.current.parentElement
+    
+    // Splitter must have a parent element. In the most trivial example it's either <body> or <html>.
+    if (!el) {
+      return
+    }
+    
+    // TODO: Potential performance issue!
+    // When nesting Splitters the `observer` is registered for each nesting "level".
+    // Splitter's parent element is another Splitter in the nesting use case.
+    const observer = new ResizeObserver(() => {      
+      const style = getComputedStyle(el)
+      const size = direction === SplitDirection.Horizontal ? el.clientWidth : el.clientHeight
+      const isReady = !!style && !!size
+      setIsRenderToCompute(isReady)
+    })
+    observer.observe(el)
 
-    const style = getComputedStyle(current)
-    const size = direction === SplitDirection.Horizontal ? current.clientWidth : current.clientHeight
-    const isReady = !!style && !!size
-
-    setIsRenderToCompute(isReady)
-  }, [containerRef.current, direction])
+    return () => {
+      observer.disconnect()
+    }
+  }, [
+    containerRef.current, 
+    direction, 
+  ])
 
   // Initial setup, runs every time the child views change.
-  useEffect(() => {
+  useEffect(function initialSetup() {
+    if (!state.isReady) return
+    
     if (children === undefined) throw new Error(`Cannot initialize split - 'children' is undefined`);
     if (!Array.isArray(children)) throw new Error(`Cannot initialize split - 'children' isn't an array.`);
     if (children.length <= 1)
@@ -350,7 +371,7 @@ function Split({
 
     setInitialSizes(direction, childRefs.current, gutterRefs.current, initialSizes);
     createPairs(direction, childRefs.current, gutterRefs.current);
-  }, [direction, setInitialSizes, createPairs, initialSizes]);
+  }, [state.isReady, direction, setInitialSizes, createPairs, initialSizes]);
 
   function addRef(refs: typeof childRefs | typeof gutterRefs, el: any) {
     if (!refs.current) throw new Error(`Can't add element to ref object - ref isn't initialized`);
@@ -369,12 +390,11 @@ function Split({
       }
     >
     */}
-    {state.isReady && (
       <Container
         ref={containerRef}
         dir={direction}
       >
-        {children && Array.isArray(children) && children.map((c, idx) => (
+        {state.isReady && children && Array.isArray(children) && children.map((c, idx) => (
           <React.Fragment key={idx}>
             <ChildWrapper
               ref={el => addRef(childRefs, el)}
@@ -404,7 +424,6 @@ function Split({
         ))}
       {/*</div>*/}
       </Container>
-    )}
     </>
   );
 }

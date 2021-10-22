@@ -15,7 +15,7 @@ function OnDidResizeSplit() {
   return (
     <ReactSplit
       direction={SplitDirection.Horizontal}
-      onDidResize={handleResize}
+      onResizeFinished={handleResize}
     >
       <Tile>Takes {sizes[0]}%</Tile>
       <Tile>Takes {sizes[1]}%</Tile>
