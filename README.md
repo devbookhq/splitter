@@ -73,14 +73,18 @@ function MyComponent() {
 import Splitter, { SplitDirection } from '@devbookhq/splitter'
 
 function MyComponent() {
-  function handleResize(gutterIdx: number, allSizes: number[]) {
-    console.log('Resized!', gutterIdx, allSizes);
+  function handleResizeStarted(gutterIdx: number) {
+    console.log('Resize started!', gutterIdx);
+  }
+  function handleResizeFinished(gutterIdx: number, newSizes: number[]) {
+    console.log('Resize fonished!', gutterIdx, newSizes);
   }
 
   return (
     <Splitter
       direction={SplitDirection.Vertical}
-      onDidResize={handleResize}
+      onResizeStarted={handleResizeStarted}
+      onResizeFinished={handleResizeFinished}
     >
       <div>Tile 1</div>
       <div>Tile 2</div>
