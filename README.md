@@ -4,9 +4,9 @@ Here's a gif of what you can build with Splitter:
 ![](example.gif)
 
 Splitter is inspired by [Split.js](https://split.js.org/) and written as 100% functional component:
-- All size calculation is done through CSS using `calc`
+- All size calculation is done through CSS using `calc` with minimal JS. This makes it much faster
 - Fully responsive
-- No dependencies beside React and styled-components
+- No dependencies beside React
 - Minimal assumptions about your styling and views
 
 [CodeSandbox project](https://codesandbox.io/s/devbookhqspliiter-example-l23s4)
@@ -26,7 +26,7 @@ import Splitter, { SplitDirection } from '@devbookhq/splitter'
 
 function MyComponent() {
   return (
-    <Splitter direction={SplitDirection.Horizontal}>
+    <Splitter>
       <div>Tile 1</div>
       <div>Tile 2</div>
     </Splitter>
