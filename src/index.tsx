@@ -342,9 +342,11 @@ function Split({
     if (!state.isReady) return
     
     if (children === undefined) throw new Error(`Cannot initialize split - 'children' is undefined`);
-    if (!Array.isArray(children)) throw new Error(`Cannot initialize split - 'children' isn't an array`);
-    if (children.length <= 1)
-      throw new Error(`Cannot initialize split - the 'children' array has 1 or less elements. Provide at least 2 child views for the split`);
+    // Handle gracefully is user specified only one child elment.
+    if (!Array.isArray(children) || children.length <= 1) {
+      return
+    }
+      // throw new Error(`Cannot initialize split - the 'children' array has 1 or less elements. Provide at least 2 child views for Splitter`);
 
     // By the time first useEffect runs refs should be already set, unless something really bad happened.
     if (!childRefs.current || !gutterRefs.current)
@@ -366,6 +368,12 @@ function Split({
       className={'__dbk__container ' + `${direction}`}
       ref={containerRef}
     >
+      {children && !Array.isArray(children) && (
+        <div>
+          {children}
+        </div>
+      )}
+
       {state.isReady && children && Array.isArray(children) && children.map((c, idx) => (
         <React.Fragment key={idx}>
           <div
