@@ -77,7 +77,7 @@ function MyComponent() {
     console.log('Resize started!', gutterIdx);
   }
   function handleResizeFinished(gutterIdx: number, newSizes: number[]) {
-    console.log('Resize fonished!', gutterIdx, newSizes);
+    console.log('Resize finished!', gutterIdx, newSizes);
   }
 
   return (
