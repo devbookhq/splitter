@@ -1,12 +1,10 @@
-import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
+import ReactSplit from '@devbookhq/splitter';
 import Tile from '../Tile';
 
 
 function HorizontalSplit() {  
   return (
-    <ReactSplit
-      direction={SplitDirection.Horizontal}
-      >
+    <ReactSplit>
       <Tile/>
       <Tile/>
       <Tile/>

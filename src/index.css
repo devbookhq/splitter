@@ -1,24 +1,90 @@
-.__devbook__splitter-container-horizontal {
+/* === Main Container === */
+.__dbk__container {
   height: 100%;
   width: 100%;
 
   display: flex;
+  overflow: hidden;
+}
+
+.__dbk__container.Horizontal {
   flex-direction: row;
-  overflow: hidden;
-  background: blue;
 }
 
-.__devbook__splitter-container-vertical {
-  height: 100%;
-  width: 100%;
-
-  display: flex;
+.__dbk__container.Vertical {
   flex-direction: column;
-  overflow: hidden;
-  background: yellow;
 }
+/* ====== */
 
-.__devbook__splitter-child-wrapper {
+/* === Wrapper for each child element === */
+.__dbk__child-wrapper {
   height: 100%;
   width: 100%;
 }
+/* ====== */
+
+/* === Gutter === */
+.__dbk__gutter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* .__dbk__gutter > div {
+  background: red;
+} */
+.__dbk__gutter.Horizontal {
+  height: 100%;
+  padding: 0 2px;
+  flex-direction: column;
+}
+.__dbk__gutter.Horizontal:hover {
+  cursor: col-resize;
+}
+
+.__dbk__gutter.Vertical {
+  width: 100%;
+  padding: 2px 0;
+  flex-direction: row;
+}
+.__dbk__gutter.Vertical:hover {
+  cursor: row-resize;
+}
+
+.__dbk__gutter.Light {
+  background: #EDF0EF;
+}
+.__dbk__gutter.Light:hover > .__dbk__dragger {
+  background: #76747B;
+}
+
+.__dbk__gutter.Dark {
+  background: #020203;
+}
+.__dbk__gutter.Dark:hover > .__dbk__dragger {
+  background: #9995A3;
+}
+/* ====== */
+
+/* === Gutter's Dragger === */
+.__dbk__dragger {
+  border-radius: 2px;
+}
+
+.__dbk__dragger.Horizontal {
+  width: 4px;
+  height: 24px;  
+}
+
+.__dbk__dragger.Vertical {
+  width: 24px;
+  height: 4px;  
+}
+
+.__dbk__dragger.Light {
+  background: #A6ACB5;
+}
+
+.__dbk__dragger.Dark {
+  background: #434252;
+}
+/* ====== */

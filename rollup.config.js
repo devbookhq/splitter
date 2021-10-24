@@ -1,8 +1,8 @@
 import typescript from 'rollup-plugin-typescript2'
-import postcss from 'rollup-plugin-postcss';
 import autoprefixer from 'autoprefixer';
 import {terser} from 'rollup-plugin-terser';
 import babel from '@rollup/plugin-babel';
+import postcss from 'rollup-plugin-postcss';
 
 import pkg from './package.json'
 
@@ -14,11 +14,19 @@ export default {
       format: 'cjs',
       exports: 'named',
       sourcemap: true,
+    },
+    {
+      file: pkg.module,
+      format: 'es',
+      exports: 'named',
+      sourcemap: true
     }
   ],
-  external: ['react', 'react-dom', 'styled-components'],
-  globals: { 'styled-components': 'styled' },
+  external: ['react', 'react-dom'],
   plugins: [
+    postcss({
+      plugins: [],
+    }),
     babel({
       exclude: 'node_modules/**'
     }),

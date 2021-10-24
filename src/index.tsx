@@ -1,16 +1,13 @@
 import React, {
-  useEffect,
-  useLayoutEffect,
+  useEffect,  
   useReducer,
   useRef,
 } from 'react';
-import styled from 'styled-components';
 
+import './index.css';
 import getInnerSize from './utils/getInnerSize';
 import useEventListener from './useEventListener';
-
 import Gutter from './Gutter';
-
 import { ActionType } from './state/reducer.actions';
 import reducer, { State } from './state/reducer';
 import getGutterSizes from './utils/getGutterSize';
@@ -26,20 +23,6 @@ export enum GutterTheme {
 }
 
 const DefaultMinSize = 16;
-
-const Container = styled.div<{ dir: SplitDirection }>`
-  height: 100%;
-  width: 100%;
-
-  display: flex;
-  flex-direction: ${props => props.dir === SplitDirection.Horizontal ? 'row' : 'column'};
-  overflow: hidden;
-`;
-
-const ChildWrapper = styled.div`
-  height: 100%;
-  width: 100%;
-`;
 
 function getMousePosition(dir: SplitDirection, e: MouseEvent) {
   if (dir === SplitDirection.Horizontal) return e.clientX;
@@ -66,7 +49,7 @@ const initialState: State = {
 }
 
 interface SplitProps {
-  direction: SplitDirection;
+  direction?: SplitDirection;
   minWidths?: number[]; // In pixels.
   minHeights?: number[]; // In pixels.
   initialSizes?: number[]; // In percentage.
@@ -80,7 +63,7 @@ interface SplitProps {
 }
 
 function Split({
-  direction,
+  direction = SplitDirection.Horizontal,
   minWidths = [],
   minHeights = [],
   initialSizes,
@@ -140,8 +123,8 @@ function Split({
     for (let idx = 0; idx < state.pairs.length; idx++) {
       const pair = state.pairs[idx];
       const parentSize = getInnerSize(direction, pair.parent);
-      if (parentSize === undefined) throw new Error(`Cannot call the 'onResizeFinished' callback - parentSize is undefined.`);
-      if (pair.gutterSize === undefined) throw new Error(`Cannot call 'onResizeFinished' callback - gutterSize is undefined.`);
+      if (parentSize === undefined) throw new Error(`Cannot call the 'onResizeFinished' callback - parentSize is undefined`);
+      if (pair.gutterSize === undefined) throw new Error(`Cannot call 'onResizeFinished' callback - gutterSize is undefined`);
 
       const isFirst = idx === 0;
       const isLast = idx === state.pairs.length - 1;
@@ -158,7 +141,7 @@ function Split({
       }
     }
 
-    if (state.draggingIdx === undefined) throw new Error(`Could not reset cursor and user-select because 'state.draggingIdx' is undefined.`);
+    if (state.draggingIdx === undefined) throw new Error(`Could not reset cursor and user-select because 'state.draggingIdx' is undefined`);
     const pair = state.pairs[state.draggingIdx];
     onResizeFinished?.(pair.idx, allSizes);
 
@@ -199,9 +182,9 @@ function Split({
   ) => {
     // All children must have common parent.
     const parent = children[0].parentNode;
-    if (!parent) throw new Error(`Cannot set initial sizes - parent is undefined.`);
+    if (!parent) throw new Error(`Cannot set initial sizes - parent is undefined`);
     const parentSize = getInnerSize(direction, parent as HTMLElement);
-    if (parentSize === undefined) throw new Error(`Cannot set initial sizes - parent has undefined size.`);
+    if (parentSize === undefined) throw new Error(`Cannot set initial sizes - parent has undefined size`);
 
     children.forEach((c, idx) => {
       const isFirst = idx === 0;
@@ -247,11 +230,11 @@ function Split({
   // |                     |||                     |||                     |
   // -----------------------------------------------------------------------
   const adjustSize = React.useCallback((direction: SplitDirection, offset: number) => {
-    if (state.draggingIdx === undefined) throw new Error(`Cannot adjust size - 'draggingIdx' is undefined.`);
+    if (state.draggingIdx === undefined) throw new Error(`Cannot adjust size - 'draggingIdx' is undefined`);
 
     const pair = state.pairs[state.draggingIdx];
-    if (pair.size === undefined) throw new Error(`Cannot adjust size - 'pair.size' is undefined.`);
-    if (pair.gutterSize === undefined) throw new Error(`Cannot adjust size - 'pair.gutterSize' is undefined.`);
+    if (pair.size === undefined) throw new Error(`Cannot adjust size - 'pair.size' is undefined`);
+    if (pair.gutterSize === undefined) throw new Error(`Cannot adjust size - 'pair.gutterSize' is undefined`);
     const percentage = pair.aSizePct + pair.bSizePct;
 
     const aSizePct = (offset / pair.size) * percentage;
@@ -274,12 +257,12 @@ function Split({
 
   const drag = React.useCallback((e: MouseEvent, direction: SplitDirection, minSizes: number[]) => {
     if (!state.isDragging) return
-    if (state.draggingIdx === undefined) throw new Error(`Cannot drag - 'draggingIdx' is undefined.`);
+    if (state.draggingIdx === undefined) throw new Error(`Cannot drag - 'draggingIdx' is undefined`);
 
     const pair = state.pairs[state.draggingIdx];
-    if (pair.start === undefined) throw new Error(`Cannot drag - 'pair.start' is undefined.`);
-    if (pair.size === undefined) throw new Error(`Cannot drag - 'pair.size' is undefined.`);
-    if (pair.gutterSize === undefined) throw new Error(`Cannot drag - 'pair.gutterSize' is undefined.`);
+    if (pair.start === undefined) throw new Error(`Cannot drag - 'pair.start' is undefined`);
+    if (pair.size === undefined) throw new Error(`Cannot drag - 'pair.size' is undefined`);
+    if (pair.gutterSize === undefined) throw new Error(`Cannot drag - 'pair.gutterSize' is undefined`);
 
     // 'offset' is the width of the 'a' element in a pair.
     let offset = getMousePosition(direction, e) - pair.start;
@@ -333,9 +316,7 @@ function Split({
     const el = containerRef.current.parentElement
     
     // Splitter must have a parent element. In the most trivial example it's either <body> or <html>.
-    if (!el) {
-      return
-    }
+    if (!el) return
     
     // TODO: Potential performance issue!
     // When nesting Splitters the `observer` is registered for each nesting "level".
@@ -361,13 +342,13 @@ function Split({
     if (!state.isReady) return
     
     if (children === undefined) throw new Error(`Cannot initialize split - 'children' is undefined`);
-    if (!Array.isArray(children)) throw new Error(`Cannot initialize split - 'children' isn't an array.`);
+    if (!Array.isArray(children)) throw new Error(`Cannot initialize split - 'children' isn't an array`);
     if (children.length <= 1)
-      throw new Error(`Cannot initialize split - the 'children' array has 1 or less elements. Provide at least 2 child views for the split.`);
+      throw new Error(`Cannot initialize split - the 'children' array has 1 or less elements. Provide at least 2 child views for the split`);
 
     // By the time first useEffect runs refs should be already set, unless something really bad happened.
     if (!childRefs.current || !gutterRefs.current)
-      throw new Error(`Cannot create pairs - 'childRefs' or 'gutterRefs' is undefined.`);
+      throw new Error(`Cannot create pairs - either variable 'childRefs' or 'gutterRefs' is undefined`);
 
     setInitialSizes(direction, childRefs.current, gutterRefs.current, initialSizes);
     createPairs(direction, childRefs.current, gutterRefs.current);
@@ -380,51 +361,33 @@ function Split({
     }
   }
 
-  return (
-    <>
-    {/*
+  return (    
     <div
-      className={direction === SplitDirection.Horizontal
-        ? '__devbook__splitter-container-horizontal'
-        : '__devbook__splitter-container-vertical'
-      }
+      className={'__dbk__container ' + `${direction}`}
+      ref={containerRef}
     >
-    */}
-      <Container
-        ref={containerRef}
-        dir={direction}
-      >
-        {state.isReady && children && Array.isArray(children) && children.map((c, idx) => (
-          <React.Fragment key={idx}>
-            <ChildWrapper
-              ref={el => addRef(childRefs, el)}
-              className={idx < classes.length ? classes[idx] : ''}
-            >{c}
-            </ChildWrapper>
-            {/*
-            <div
-              className="__devbook__splitter-child-wrapper"
-              ref={el => addRef(childRefs, el)}
-            >
-              {c}
-            </div>
-            */}
-            {/* A gutter is between each two child views. */}
-            {idx < children.length - 1 &&
-              <Gutter
-                ref={el => addRef(gutterRefs, el)}
-                className={gutterClassName}
-                theme={gutterTheme}
-                draggerClassName={draggerClassName}
-                direction={direction}
-                onMouseDown={e => handleGutterMouseDown(idx, e)}
-              />
-            }
-          </React.Fragment>
-        ))}
-      {/*</div>*/}
-      </Container>
-    </>
+      {state.isReady && children && Array.isArray(children) && children.map((c, idx) => (
+        <React.Fragment key={idx}>
+          <div
+            ref={el => addRef(childRefs, el)}
+            className={'__dbk__child-wrapper ' + (idx < classes.length ? classes[idx] : '')}
+          >{c}
+          </div>
+          
+          {/* Gutter is between each two child views. */}
+          {idx < children.length - 1 &&
+            <Gutter
+              ref={el => addRef(gutterRefs, el)}
+              className={gutterClassName}
+              theme={gutterTheme}
+              draggerClassName={draggerClassName}
+              direction={direction}
+              onMouseDown={e => handleGutterMouseDown(idx, e)}
+            />
+          }
+        </React.Fragment>
+      ))}
+    </div>
   );
 }
 
