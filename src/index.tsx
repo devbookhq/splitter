@@ -173,14 +173,14 @@ function Split({
   /////////
 
   // This method is called on the initial render.
-  // It iterates through the all children sets their initial sizes.
+  // It iterates through the all children and sets their initial sizes.
   const setInitialSizes = React.useCallback((
     direction: SplitDirection,
     children: HTMLElement[],
     gutters: HTMLElement[],
     initialSizes?: number[],
   ) => {
-    // All children must have common parent.
+    // We assume that all children have the same parent.
     const parent = children[0].parentNode;
     if (!parent) throw new Error(`Cannot set initial sizes - parent is undefined`);
     const parentSize = getInnerSize(direction, parent as HTMLElement);
@@ -264,7 +264,15 @@ function Split({
     if (pair.size === undefined) throw new Error(`Cannot drag - 'pair.size' is undefined`);
     if (pair.gutterSize === undefined) throw new Error(`Cannot drag - 'pair.gutterSize' is undefined`);
 
-    // 'offset' is the width of the 'a' element in a pair.
+    // 'offset' is the width of the 'a' element in a pair. 
+    // It's the mouse cursor's distance from the start of a pair.
+    // ------------------------------------------------
+    // |                     |||                      |
+    // |---offset---*        |||                      |
+    // |                     |||                      |
+    // |                     |||                      |
+    // ------------------------------------------------
+    // | <- start                              end -> |
     let offset = getMousePosition(direction, e) - pair.start;
 
     // Limit the maximum size and the minimum size of resized children.
@@ -278,8 +286,7 @@ function Split({
       bMinSize = minSizes[state.draggingIdx + 1];
     }
 
-    // TODO: We should check whether the parent is big enough
-    // to support these min sizes.
+    // TODO: We should check whether the parent is big enough to support these min sizes.
     if (offset < pair.gutterSize + aMinSize) {
       offset = pair.gutterSize + aMinSize;
     }
@@ -291,16 +298,68 @@ function Split({
     adjustSize(direction, offset);
   }, [state.isDragging, state.draggingIdx, state.pairs, adjustSize]);
 
+  const moveBy = React.useCallback(
+
   function handleGutterMouseDown(gutterIdx: number, e: MouseEvent) {
     e.preventDefault();
     calculateSizes(direction, gutterIdx);
     startDragging(direction, gutterIdx);
   }
 
+  // Gutter can get focused when user press the TAB key. 
+  function handleGutterFocus(gutterIdx: number, e: MouseEvent) {
+    e.preventDefault();
+    console.log('Gutter', gutterIdx, 'focused!');
+    calculateSizes(direction, gutterIdx);
+    startKeyboardDragging(direction, gutterIdx)
+    // startDragging(direction, gutterIdx);
+  }
+
+  useEventListener('keydown', (e) => {
+    if (!state.isKeyboardDragging) return;
+    
+    // Ignore if it isn't an arrow key.
+    if (e.keyCode > 40 || e.keyCode < 37) return;
+    
+    if (state.draggingIdx === undefined)
+      throw new Error(`Cannot calculate sizes after dragging - 'state.draggingIdx' is undefined`);
+    
+    // Only allow appropriate arrow keys based on the split direction.    
+    
+    let moveAmount = 0
+    if (direction === SplitDirection.Horizontal) {
+      // Left
+      if (e.keyCode == 37) {
+        moveAmount = -10;
+      }
+      
+      // Right
+      if (e.keyCode == 39) {
+        moveAmount = 10;
+      }
+    }
+    
+    if (direction === SplitDirection.Vertical) {
+      // Up
+      if (e.keyCode == 38) {
+        moveAmount = 10;
+      }
+
+      // Down
+      if (e.keyCode == 40) {
+        moveAmount = -10;
+      }
+    }    
+    
+    const minSizes = direction === SplitDirection.Horizontal ? minWidths : minHeights;
+    moveBy(direction, state.draggingIdx, moveAmount, minSizes);
+    stopKeyboardDragging();
+  }, [state.isKeyboardDragging, stopKeyboardDragging, moveBy, minWidths, minHeights])
+
   useEventListener('mouseup', () => {
     if (!state.isDragging) return;
     if (state.draggingIdx === undefined)
-      throw new Error(`Cannot calculate sizes after dragging = 'state.draggingIdx' is undefined`);
+      throw new Error(`Cannot calculate sizes after dragging - 'state.draggingIdx' is undefined`);
     calculateSizes(direction, state.draggingIdx);
     stopDragging();
   }, [state.isDragging, stopDragging]);
@@ -391,6 +450,7 @@ function Split({
               draggerClassName={draggerClassName}
               direction={direction}
               onMouseDown={e => handleGutterMouseDown(idx, e)}
+              onFocus={e => handleGutterFocus(idx, e)}
             />
           }
         </React.Fragment>

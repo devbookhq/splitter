@@ -5,9 +5,17 @@ import Pair from '../pair';
 import getInnerSize from '../utils/getInnerSize';
 import getGutterSizes from '../utils/getGutterSize';
 
+// Our `State` reducer only reflects the actual state of draggable HTML
+// elements in the DOM tree.
+// The state is recalculated every time we start dragging:
+// User drags an element, we recalculate the state to reflect the 
+// current state of the DOM tree, update the element's width
+// or height via CSS `calc` based on the sizes in our state.
+
 export interface State {
   isReady: boolean;
 
+  isKeyboardDragging: boolean;
   isDragging: boolean;
   draggingIdx?: number; // Index of a gutter that is being dragged.
 
@@ -101,8 +109,7 @@ export default function reducer(state: State, action: Action) {
     }
     // Recalculates the stored sizes based on the actual elements' sizes.
     case ActionType.CalculateSizes: {
-      // We need to calculate sizes only for the pair
-      // that has the moved gutter.
+      // We need to calculate sizes only for the pair that has the moved gutter.
       const { direction, gutterIdx } = action.payload;
       const pair = state.pairs[gutterIdx];
 

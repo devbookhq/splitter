@@ -4,9 +4,7 @@ import Tile from '../Tile';
 
 function HorizontalSplit() {  
   return (
-    <ReactSplit
-      direction={SplitDirection.Vertical}
-    >
+    <ReactSplit>
       <Tile/>        
       <Tile/>
       <Tile/>        

@@ -29,9 +29,7 @@
   align-items: center;
   justify-content: center;
 }
-/* .__dbk__gutter > div {
-  background: red;
-} */
+
 .__dbk__gutter.Horizontal {
   height: 100%;
   padding: 0 2px;
@@ -68,6 +66,9 @@
 /* === Gutter's Dragger === */
 .__dbk__dragger {
   border-radius: 2px;
+}
+.__dbk__dragger:focus {
+  outline: 1px solid #43DE8B;
 }
 
 .__dbk__dragger.Horizontal {

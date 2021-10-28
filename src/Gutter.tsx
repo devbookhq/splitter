@@ -7,6 +7,7 @@ interface GutterProps {
   draggerClassName?: string;
   direction?: SplitDirection;
   onMouseDown?: (e: any) => void;
+  onFocus?: (e: any) => void;
 }
 
 const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
@@ -16,6 +17,7 @@ const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
     draggerClassName,
     direction = SplitDirection.Vertical,
     onMouseDown,
+    onFocus,
   },
   ref,
 ) => {
@@ -23,13 +25,18 @@ const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
   const draggerClass = `__dbk__dragger ${direction} ${theme} ${draggerClassName || ''}`;
 
   return (    
-    <div
+    <div      
       className={containerClass}
       ref={ref}
       dir={direction}
       onMouseDown={onMouseDown}
     >
-      <div className={draggerClass}/>
+      <div 
+        tabIndex={0}
+        onFocus={onFocus}
+        onBlur={() => console.log('BLUR')}
+        className={draggerClass}
+      />
     </div>
   );
 });
