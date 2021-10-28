@@ -8,6 +8,7 @@ interface GutterProps {
   direction?: SplitDirection;
   onMouseDown?: (e: any) => void;
   onFocus?: (e: any) => void;
+  onBlur?: (e: any) => void;
 }
 
 const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
@@ -18,6 +19,7 @@ const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
     direction = SplitDirection.Vertical,
     onMouseDown,
     onFocus,
+    onBlur,
   },
   ref,
 ) => {
@@ -34,7 +36,7 @@ const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
       <div 
         tabIndex={0}
         onFocus={onFocus}
-        onBlur={() => console.log('BLUR')}
+        onBlur={onBlur}
         className={draggerClass}
       />
     </div>

@@ -350,10 +350,15 @@ function Split({
   }
 
   // Gutter can get focused when a user presses the TAB key. 
-  function handleGutterFocus(gutterIdx: number, e: MouseEvent) {
+  function handleGutterFocus(gutterIdx: number, e: KeyboardEvent) {
     e.preventDefault();
     calculateSizes(direction, gutterIdx);
     startKeyboardDragging(gutterIdx);
+  }
+
+  function handleGutterBlur(e: KeyboardEvent) {
+    e.preventDefault();
+    stopKeyboardDragging();
   }
 
   useEventListener('keydown', (e) => {
@@ -394,7 +399,6 @@ function Split({
     
     const minSizes = direction === SplitDirection.Horizontal ? minWidths : minHeights;
     moveBy(direction, moveAmount, minSizes);
-    //stopKeyboardDragging();
   }, [state.isKeyboardDragging, stopKeyboardDragging, moveBy, minWidths, minHeights])
 
   useEventListener('mouseup', () => {
@@ -492,6 +496,7 @@ function Split({
               direction={direction}
               onMouseDown={e => handleGutterMouseDown(idx, e)}
               onFocus={e => handleGutterFocus(idx, e)}
+              onBlur={e => handleGutterBlur(e)}
             />
           }
         </React.Fragment>
