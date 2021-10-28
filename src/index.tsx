@@ -44,6 +44,7 @@ const stateInit: State = (direction: SplitDirection = SplitDirection.Horizontal)
 
 const initialState: State = {
   isReady: false,
+  isKeyboardDragging: false,
   isDragging: false,
   pairs: [],
 }
@@ -112,6 +113,19 @@ function Split({
     pair.parent.style.cursor = getCursorIcon(direction);
     document.body.style.cursor = getCursorIcon(direction);
   }, [state.pairs]);
+
+  const startKeyboardDragging = React.useCallback((gutterIdx: number) => {
+    dispatch({
+      type: ActionType.StartKeyboardDragging,
+      payload: { gutterIdx },
+    })
+  }, [state.pairs])
+
+  const stopKeyboardDragging = React.useCallback(() => {
+    dispatch({
+      type: ActionType.StopKeyboardDragging,
+    });
+  }, [])
 
   const stopDragging = React.useCallback(() => {
     dispatch({
@@ -266,6 +280,8 @@ function Split({
 
     // 'offset' is the width of the 'a' element in a pair. 
     // It's the mouse cursor's distance from the start of a pair.
+    //
+    // "*" is a mouse position.
     // ------------------------------------------------
     // |                     |||                      |
     // |---offset---*        |||                      |
@@ -298,7 +314,34 @@ function Split({
     adjustSize(direction, offset);
   }, [state.isDragging, state.draggingIdx, state.pairs, adjustSize]);
 
-  const moveBy = React.useCallback(
+  const moveBy = React.useCallback((dir: SplitDirection, amount: number, minSizes: number[]) => {
+    if (!state.isKeyboardDragging) return
+    if (state.draggingIdx === undefined) throw new Error(`Cannot drag - 'draggingIdx' is undefined`);
+
+    const pair = state.pairs[state.draggingIdx];
+    if (pair.start === undefined) throw new Error(`Cannot drag - 'pair.start' is undefined`);
+    if (pair.size === undefined) throw new Error(`Cannot drag - 'pair.size' is undefined`);
+    if (pair.gutterSize === undefined) throw new Error(`Cannot drag - 'pair.gutterSize' is undefined`);
+
+    
+    // 'offset' is the width of the 'a' element in a pair.
+    // It's the current size of the `a` element minus/plus the `amount`
+    let offset = dir === SplitDirection.Horizontal 
+      ? 
+        pair.a.getBoundingClientRect().width + amount
+      : pair.a.getBoundingClientRect().height + amount;
+
+    let aMinSize = DefaultMinSize;
+    let bMinSize = DefaultMinSize;
+    if (minSizes.length > state.draggingIdx) {
+      aMinSize = minSizes[state.draggingIdx];
+    }
+    if (minSizes.length >= state.draggingIdx + 1) {
+      bMinSize = minSizes[state.draggingIdx + 1];
+    }
+
+    adjustSize(direction, offset)
+  },[state.isDragging, state.draggingIdx, state.pairs, adjustSize])
 
   function handleGutterMouseDown(gutterIdx: number, e: MouseEvent) {
     e.preventDefault();
@@ -306,13 +349,11 @@ function Split({
     startDragging(direction, gutterIdx);
   }
 
-  // Gutter can get focused when user press the TAB key. 
+  // Gutter can get focused when a user presses the TAB key. 
   function handleGutterFocus(gutterIdx: number, e: MouseEvent) {
     e.preventDefault();
-    console.log('Gutter', gutterIdx, 'focused!');
     calculateSizes(direction, gutterIdx);
-    startKeyboardDragging(direction, gutterIdx)
-    // startDragging(direction, gutterIdx);
+    startKeyboardDragging(gutterIdx);
   }
 
   useEventListener('keydown', (e) => {
@@ -342,18 +383,18 @@ function Split({
     if (direction === SplitDirection.Vertical) {
       // Up
       if (e.keyCode == 38) {
-        moveAmount = 10;
+        moveAmount = -10;
       }
 
       // Down
       if (e.keyCode == 40) {
-        moveAmount = -10;
+        moveAmount = 10;
       }
     }    
     
     const minSizes = direction === SplitDirection.Horizontal ? minWidths : minHeights;
-    moveBy(direction, state.draggingIdx, moveAmount, minSizes);
-    stopKeyboardDragging();
+    moveBy(direction, moveAmount, minSizes);
+    //stopKeyboardDragging();
   }, [state.isKeyboardDragging, stopKeyboardDragging, moveBy, minWidths, minHeights])
 
   useEventListener('mouseup', () => {

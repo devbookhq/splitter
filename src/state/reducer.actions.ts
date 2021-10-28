@@ -6,6 +6,8 @@ export enum ActionType {
   CalculateSizes,
   StartDragging,
   StopDragging,
+  StartKeyboardDragging,
+  StopKeyboardDragging,
 }
 
 export interface SetIsReadyToCompute {
@@ -39,14 +41,25 @@ export interface StartDragging {
   };
 }
 
-interface StopDragging {
+export interface StopDragging {
   type: ActionType.StopDragging;
+}
+
+export interface StartKeyboardDragging {
+  type: ActionType.StartKeyboardDragging;
+  payload: {
+    gutterIdx: number;
+  };
+}
+
+export interface StopKeyboardDragging {
+  type: ActionType.StopKeyboardDragging;
 }
 
 export type Action = SetIsReadyToCompute
   | CreatePairs
   | CalculateSizes
   | StartDragging
-  | StopDragging;
-
-
+  | StopDragging
+  | StartKeyboardDragging
+  | StopKeyboardDragging;
