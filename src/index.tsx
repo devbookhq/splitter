@@ -340,6 +340,15 @@ function Split({
       bMinSize = minSizes[state.draggingIdx + 1];
     }
 
+     // TODO: We should check whether the parent is big enough to support these min sizes.
+     if (offset < pair.gutterSize + aMinSize) {
+      offset = pair.gutterSize + aMinSize;
+    }
+
+    if (offset >= pair.size - (pair.gutterSize + bMinSize)) {
+      offset = pair.size - (pair.gutterSize + bMinSize);
+    }
+
     adjustSize(direction, offset)
   },[state.isDragging, state.draggingIdx, state.pairs, adjustSize])
 
@@ -372,7 +381,7 @@ function Split({
     
     // Only allow appropriate arrow keys based on the split direction.    
     
-    let moveAmount = 0
+    let moveAmount = 0;
     if (direction === SplitDirection.Horizontal) {
       // Left
       if (e.keyCode == 37) {
