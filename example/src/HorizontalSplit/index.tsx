@@ -5,7 +5,7 @@ import Tile from '../Tile';
 function HorizontalSplit() {  
   return (
     <ReactSplit
-      direction={SplitDirection.Vertical}
+      direction={SplitDirection.Horizontal}
     >
       <Tile/>        
       <Tile/>
