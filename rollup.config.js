@@ -22,7 +22,7 @@ export default {
       sourcemap: true
     }
   ],
-  external: ['react', 'react-dom'],
+  external: ['react', 'react-dom', 'react/jsx-runtime'],
   plugins: [
     postcss({
       plugins: [],
@@ -30,7 +30,7 @@ export default {
     babel({
       exclude: 'node_modules/**'
     }),
-    typescript(),    
+    typescript(),
     terser() // minifies generated bundles
   ],
 };
