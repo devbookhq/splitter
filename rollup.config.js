@@ -1,5 +1,5 @@
-import typescript from 'rollup-plugin-typescript2'
-import autoprefixer from 'autoprefixer';
+// import typescript from 'rollup-plugin-typescript2'
+import typescript from '@rollup/plugin-typescript';
 import {terser} from 'rollup-plugin-terser';
 import babel from '@rollup/plugin-babel';
 import postcss from 'rollup-plugin-postcss';
@@ -30,9 +30,7 @@ export default {
     babel({
       exclude: 'node_modules/**'
     }),
-    typescript({
-        typescript: require('typescript')
-    }),
+    typescript(),    
     terser() // minifies generated bundles
   ],
 };
