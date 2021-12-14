@@ -1,5 +1,5 @@
 import React, {
-  useEffect,  
+  useEffect,
   useReducer,
   useRef,
 } from 'react';
@@ -48,7 +48,7 @@ const initialState: State = {
   pairs: [],
 }
 
-interface SplitProps {
+export interface SplitProps {
   direction?: SplitDirection;
   minWidths?: number[]; // In pixels.
   minHeights?: number[]; // In pixels.
@@ -310,18 +310,18 @@ function Split({
     drag(e, direction, direction === SplitDirection.Horizontal ? minWidths : minHeights);
   }, [direction, state.isDragging, drag, minWidths, minHeights]);
 
-  // This makes sure that Splitter properly re-renders if parent's size changes dynamically.  
-  useEffect(function watchParentSize() {    
-    if (!containerRef.current) return    
+  // This makes sure that Splitter properly re-renders if parent's size changes dynamically.
+  useEffect(function watchParentSize() {
+    if (!containerRef.current) return
     const el = containerRef.current.parentElement
-    
+
     // Splitter must have a parent element. In the most trivial example it's either <body> or <html>.
     if (!el) return
-    
+
     // TODO: Potential performance issue!
     // When nesting Splitters the `observer` is registered for each nesting "level".
     // Splitter's parent element is another Splitter in the nesting use case.
-    const observer = new ResizeObserver(() => {      
+    const observer = new ResizeObserver(() => {
       const style = getComputedStyle(el)
       const size = direction === SplitDirection.Horizontal ? el.clientWidth : el.clientHeight
       const isReady = !!style && !!size
@@ -333,14 +333,14 @@ function Split({
       observer.disconnect()
     }
   }, [
-    containerRef.current, 
-    direction, 
+    containerRef.current,
+    direction,
   ])
 
   // Initial setup, runs every time the child views change.
   useEffect(function initialSetup() {
     if (!state.isReady) return
-    
+
     if (children === undefined) throw new Error(`Cannot initialize split - 'children' is undefined`);
     // Handle gracefully is user specified only one child elment.
     if (!Array.isArray(children) || children.length <= 1) {
@@ -363,7 +363,7 @@ function Split({
     }
   }
 
-  return (    
+  return (
     <div
       className={'__dbk__container ' + `${direction}`}
       ref={containerRef}
@@ -381,7 +381,7 @@ function Split({
             className={'__dbk__child-wrapper ' + (idx < classes.length ? classes[idx] : '')}
           >{c}
           </div>
-          
+
           {/* Gutter is between each two child views. */}
           {idx < children.length - 1 &&
             <Gutter
