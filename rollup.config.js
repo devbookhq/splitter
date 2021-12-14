@@ -1,5 +1,5 @@
-// import typescript from 'rollup-plugin-typescript2'
-import typescript from '@rollup/plugin-typescript';
+import typescript from 'rollup-plugin-typescript2';
+
 import {terser} from 'rollup-plugin-terser';
 import babel from '@rollup/plugin-babel';
 import postcss from 'rollup-plugin-postcss';

@@ -48,7 +48,7 @@ const initialState: State = {
   pairs: [],
 }
 
-export interface SplitProps {
+interface SplitProps {
   direction?: SplitDirection;
   minWidths?: number[]; // In pixels.
   minHeights?: number[]; // In pixels.
@@ -399,4 +399,7 @@ function Split({
   );
 }
 
+export type {
+  SplitProps
+}
 export default Split;
