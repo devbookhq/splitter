@@ -77,7 +77,6 @@ function Split({
   classes = [],
 }: SplitProps) {
   const children = flattenChildren(reactChildren)
-  console.log('children', children)
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -194,9 +193,12 @@ function Split({
       const isFirst = idx === 0;
       const isLast = idx === children.length - 1;
 
-      const gutter = gutters[isLast ? idx-1 : idx];
-      let gutterSize = gutter.getBoundingClientRect()[direction === SplitDirection.Horizontal ? 'width' : 'height'];
-      gutterSize = isFirst || isLast ? gutterSize / 2 : gutterSize;
+      let gutterSize = 0
+      if (children.length > 1) {
+        const gutter = gutters[isLast ? idx-1 : idx];
+        let gutterSize = gutter.getBoundingClientRect()[direction === SplitDirection.Horizontal ? 'width' : 'height'];
+        gutterSize = isFirst || isLast ? gutterSize / 2 : gutterSize;
+      }
 
       let calc: string;
       if (initialSizes && idx < initialSizes.length)  {
@@ -343,17 +345,21 @@ function Split({
 
   // Initial setup, runs every time the child views change.
   useEffect(function initialSetup() {
+    console.log({ initialSizes })
     if (!state.isReady) return
-    // No work to do if there's only one child.
-    if (children.length <= 1) return
-
     // By the time first useEffect runs refs should be already set, unless something really bad happened.
     if (!childRefs.current || !gutterRefs.current) {
       throw new Error(`Cannot create pairs - either variable 'childRefs' or 'gutterRefs' is undefined`);
     }
 
-    setInitialSizes(direction, childRefs.current, gutterRefs.current, initialSizes);
-    createPairs(direction, childRefs.current, gutterRefs.current);
+    // Don't create pairs if there's only one child.
+    if (children.length <= 1) {
+      setInitialSizes(direction, childRefs.current, gutterRefs.current, initialSizes);
+    } else {
+      setInitialSizes(direction, childRefs.current, gutterRefs.current, initialSizes);
+      createPairs(direction, childRefs.current, gutterRefs.current);
+    }
+
   }, [
     reactChildren,
     state.isReady,

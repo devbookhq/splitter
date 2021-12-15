@@ -11,8 +11,11 @@ function HorizontalSplit() {
     }, 5000)
   }, [])
 
+
   return (
-    <ReactSplit>
+    <ReactSplit
+      initialSizes={insertChildren ? [50, 50] : [100]}
+    >
       <Tile>Initial child node</Tile>
       {insertChildren &&
         <>
