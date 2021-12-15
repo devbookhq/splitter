@@ -13,6 +13,7 @@ import InitialSizes from './InitialSizes';
 import ScrollableChildren from './ScrollableChildren';
 import OnDidResizeSplit from './OnDidResize';
 import DynamicParentSize from './DynamicParentSize';
+import DynamicChildren  from './DynamicChildren';
 
 enum Page {
   SingleHorizontal,
@@ -26,6 +27,7 @@ enum Page {
   ScrollableChildren,
   OnDidResize,
   DynamicParent,
+  DynamicChildren,
 }
 
 function App() {
@@ -45,6 +47,7 @@ function App() {
         <button onClick={() => setPage(Page.ScrollableChildren)}>Scrollable tiles</button>
         <button onClick={() => setPage(Page.OnDidResize)}>On size change</button>
         <button onClick={() => setPage(Page.DynamicParent)}>Dynamic parent size</button>
+        <button onClick={() => setPage(Page.DynamicChildren)}>Dynamic children</button>
       </div>
 
       <div className="splits">
@@ -85,6 +88,13 @@ function App() {
           <>
             <p>Parent's initial width is 0% and will be set to 100% in 5s. Splitter will correctly re-render. Works also with the height.</p>
             <DynamicParentSize />
+          </>
+        }
+        {
+          page === Page.DynamicChildren &&
+          <>
+            <p>Additional child nodes will be inserted after 5s.</p>
+            <DynamicChildren />
           </>
         }
       </div>

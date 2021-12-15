@@ -3,6 +3,7 @@
     "outDir": "lib",
     "target": "es6",
     "lib": ["dom", "ESNext"],
+    "sourceMap": true,
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,

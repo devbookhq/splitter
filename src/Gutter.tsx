@@ -3,7 +3,7 @@ import { SplitDirection, GutterTheme } from './index';
 
 interface GutterProps {
   className?: string;
-  theme?: GutterTheme;
+  theme: GutterTheme;
   draggerClassName?: string;
   direction?: SplitDirection;
   onMouseDown?: (e: any) => void;
@@ -12,17 +12,17 @@ interface GutterProps {
 const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
   {
     className,
-    theme = GutterTheme.Dark,
+    theme,
     draggerClassName,
     direction = SplitDirection.Vertical,
     onMouseDown,
   },
   ref,
 ) => {
-  const containerClass = `__dbk__gutter ${direction} ${theme} ${className || ''}`;
-  const draggerClass = `__dbk__dragger ${direction} ${theme} ${draggerClassName || ''}`;
+  const containerClass = `__dbk__gutter ${direction} ${className || theme}`;
+  const draggerClass = `__dbk__dragger ${direction} ${draggerClassName || theme}`;
 
-  return (    
+  return (
     <div
       className={containerClass}
       ref={ref}

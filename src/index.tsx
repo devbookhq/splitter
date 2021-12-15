@@ -11,6 +11,7 @@ import Gutter from './Gutter';
 import { ActionType } from './state/reducer.actions';
 import reducer, { State } from './state/reducer';
 import getGutterSizes from './utils/getGutterSize';
+import flattenChildren from './utils/flattenChildren';
 
 export enum SplitDirection {
   Horizontal = 'Horizontal',
@@ -70,11 +71,14 @@ function Split({
   gutterTheme = GutterTheme.Dark,
   gutterClassName,
   draggerClassName,
-  children,
+  children: reactChildren,
   onResizeStarted,
   onResizeFinished,
   classes = [],
 }: SplitProps) {
+  const children = flattenChildren(reactChildren)
+  console.log('children', children)
+
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -85,7 +89,7 @@ function Split({
   gutterRefs.current = [];
 
   // Helper dispatch functions.
-  const setIsRenderToCompute = React.useCallback((isReady: boolean) => {
+  const setIsReadyToCompute = React.useCallback((isReady: boolean) => {
     dispatch({
       type: ActionType.SetIsReadyToCompute,
       payload: { isReady },
@@ -325,7 +329,7 @@ function Split({
       const style = getComputedStyle(el)
       const size = direction === SplitDirection.Horizontal ? el.clientWidth : el.clientHeight
       const isReady = !!style && !!size
-      setIsRenderToCompute(isReady)
+      setIsReadyToCompute(isReady)
     })
     observer.observe(el)
 
@@ -340,21 +344,24 @@ function Split({
   // Initial setup, runs every time the child views change.
   useEffect(function initialSetup() {
     if (!state.isReady) return
-
-    if (children === undefined) throw new Error(`Cannot initialize split - 'children' is undefined`);
-    // Handle gracefully is user specified only one child elment.
-    if (!Array.isArray(children) || children.length <= 1) {
-      return
-    }
-      // throw new Error(`Cannot initialize split - the 'children' array has 1 or less elements. Provide at least 2 child views for Splitter`);
+    // No work to do if there's only one child.
+    if (children.length <= 1) return
 
     // By the time first useEffect runs refs should be already set, unless something really bad happened.
-    if (!childRefs.current || !gutterRefs.current)
+    if (!childRefs.current || !gutterRefs.current) {
       throw new Error(`Cannot create pairs - either variable 'childRefs' or 'gutterRefs' is undefined`);
+    }
 
     setInitialSizes(direction, childRefs.current, gutterRefs.current, initialSizes);
     createPairs(direction, childRefs.current, gutterRefs.current);
-  }, [state.isReady, direction, setInitialSizes, createPairs, initialSizes]);
+  }, [
+    reactChildren,
+    state.isReady,
+    direction,
+    setInitialSizes,
+    createPairs,
+    initialSizes,
+  ]);
 
   function addRef(refs: typeof childRefs | typeof gutterRefs, el: any) {
     if (!refs.current) throw new Error(`Can't add element to ref object - ref isn't initialized`);
@@ -368,14 +375,7 @@ function Split({
       className={'__dbk__container ' + `${direction}`}
       ref={containerRef}
     >
-      {/* User passed only a single child node. */}
-      {children && !Array.isArray(children) && (
-        <>
-        {children}
-        </>
-      )}
-
-      {state.isReady && children && Array.isArray(children) && children.map((c, idx) => (
+      {state.isReady && children.map((c, idx) => (
         <React.Fragment key={idx}>
           <div
             ref={el => addRef(childRefs, el)}
@@ -384,7 +384,7 @@ function Split({
           </div>
 
           {/* Gutter is between each two child views. */}
-          {idx < children.length - 1 &&
+          {idx < (children as React.ReactNodeArray).length - 1 &&
             <Gutter
               ref={el => addRef(gutterRefs, el)}
               className={gutterClassName}

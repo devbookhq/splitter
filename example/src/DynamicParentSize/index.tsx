@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import styled from 'styled-components';
-import Tile from '../Tile';
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
+import Tile from '../Tile';
 
 const Zero = styled.div<{ isReady: boolean }>`
   height: 100%;
@@ -26,7 +26,7 @@ function HorizontalSplit() {
         <Tile/>
         <Tile/>
       </ReactSplit>
-    </Zero>  
+    </Zero>
   );
 }
 

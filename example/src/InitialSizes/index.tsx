@@ -1,5 +1,5 @@
-import Tile from '../Tile';
 import ReactSplit, { SplitDirection } from '@devbookhq/splitter';
+import Tile from '../Tile';
 
 function InitialSizes() {
   return (
