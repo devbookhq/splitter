@@ -2,6 +2,8 @@ import { useState } from 'react';
 import './styles.css';
 import './App.css';
 
+import SingleHorizontal from './SingleHorizontal';
+import SingleVertical from './SingleVertical';
 import HorizontalSplit from './HorizontalSplit';
 import VerticalSplit from './VerticalSplit';
 import NestedSplit from './NestedSplit';
@@ -13,6 +15,8 @@ import OnDidResizeSplit from './OnDidResize';
 import DynamicParentSize from './DynamicParentSize';
 
 enum Page {
+  SingleHorizontal,
+  SingleVertical,
   Horizontal,
   Vertical,
   Nested,
@@ -25,11 +29,13 @@ enum Page {
 }
 
 function App() {
-  const [page, setPage] = useState(Page.Horizontal);
+  const [page, setPage] = useState(Page.SingleHorizontal);
 
   return (
     <div className="app">
       <div className="split-selection">
+        <button onClick={() => setPage(Page.SingleHorizontal)}>Single horizontal</button>
+        <button onClick={() => setPage(Page.SingleVertical)}>Single Vertical</button>
         <button onClick={() => setPage(Page.Horizontal)}>Horizontal</button>
         <button onClick={() => setPage(Page.Vertical)}>Vertical</button>
         <button onClick={() => setPage(Page.Nested)}>Nested</button>
@@ -42,6 +48,12 @@ function App() {
       </div>
 
       <div className="splits">
+        {page === Page.SingleHorizontal &&
+          <SingleHorizontal/>
+        }
+        {page === Page.SingleVertical &&
+          <SingleVertical/>
+        }
         {page === Page.Horizontal &&
           <HorizontalSplit/>
         }

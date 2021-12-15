@@ -368,10 +368,11 @@ function Split({
       className={'__dbk__container ' + `${direction}`}
       ref={containerRef}
     >
+      {/* User passed only a single child node. */}
       {children && !Array.isArray(children) && (
-        <div>
-          {children}
-        </div>
+        <>
+        {children}
+        </>
       )}
 
       {state.isReady && children && Array.isArray(children) && children.map((c, idx) => (
