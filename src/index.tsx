@@ -345,7 +345,6 @@ function Split({
 
   // Initial setup, runs every time the child views change.
   useEffect(function initialSetup() {
-    console.log({ initialSizes })
     if (!state.isReady) return
     // By the time first useEffect runs refs should be already set, unless something really bad happened.
     if (!childRefs.current || !gutterRefs.current) {
