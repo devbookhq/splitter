@@ -3,6 +3,7 @@ import React, {
   useReducer,
   useRef,
 } from 'react';
+import type { MouseEvent, TouchEvent } from 'react';
 
 import './index.css';
 import getInnerSize from './utils/getInnerSize';
@@ -12,6 +13,7 @@ import { ActionType } from './state/reducer.actions';
 import reducer, { State } from './state/reducer';
 import getGutterSizes from './utils/getGutterSize';
 import flattenChildren from './utils/flattenChildren';
+import { isTouchEvent } from 'utils/isTouchEvent';
 
 export enum SplitDirection {
   Horizontal = 'Horizontal',
@@ -25,9 +27,13 @@ export enum GutterTheme {
 
 const DefaultMinSize = 16;
 
-function getMousePosition(dir: SplitDirection, e: MouseEvent) {
-  if (dir === SplitDirection.Horizontal) return e.clientX;
-  return e.clientY;
+export const isTouchDevice = typeof window !== 'undefined' && 'ontouchstart' in window;
+
+// users touch or mouse position
+function getPosition(dir: SplitDirection, e: MouseEvent | TouchEvent) {
+  const targetsValueRef = isTouchEvent(e) ? e.changedTouches[0] : e;
+  if (dir === SplitDirection.Horizontal) return targetsValueRef.clientX;
+  return targetsValueRef.clientY;
 }
 
 function getCursorIcon(dir: SplitDirection) {
@@ -261,7 +267,7 @@ function Split({
     }
   }, [state.draggingIdx, state.pairs, direction]);
 
-  const drag = React.useCallback((e: MouseEvent, direction: SplitDirection, minSizes: number[]) => {
+  const drag = React.useCallback((e: MouseEvent | TouchEvent, direction: SplitDirection, minSizes: number[]) => {
     if (!state.isDragging) return
     if (state.draggingIdx === undefined) throw new Error(`Cannot drag - 'draggingIdx' is undefined`);
 
@@ -271,7 +277,7 @@ function Split({
     if (pair.gutterSize === undefined) throw new Error(`Cannot drag - 'pair.gutterSize' is undefined`);
 
     // 'offset' is the width of the 'a' element in a pair.
-    let offset = getMousePosition(direction, e) - pair.start;
+    let offset = getPosition(direction, e) - pair.start;
 
     // Limit the maximum size and the minimum size of resized children.
 
@@ -297,24 +303,33 @@ function Split({
     adjustSize(direction, offset);
   }, [state.isDragging, state.draggingIdx, state.pairs, adjustSize]);
 
-  function handleGutterMouseDown(gutterIdx: number, e: MouseEvent) {
-    e.preventDefault();
+  function handleStartDragging(gutterIdx: number) {
     calculateSizes(direction, gutterIdx);
     startDragging(direction, gutterIdx);
   }
 
-  useEventListener('mouseup', () => {
+  const onStopDragging = () => {
     if (!state.isDragging) return;
     if (state.draggingIdx === undefined)
       throw new Error(`Cannot calculate sizes after dragging = 'state.draggingIdx' is undefined`);
     calculateSizes(direction, state.draggingIdx);
     stopDragging();
-  }, [state.isDragging, stopDragging]);
+  };
 
-  useEventListener('mousemove', (e: MouseEvent) => {
+  const onMove = (e: MouseEvent | TouchEvent) => {
     if (!state.isDragging) return;
+    if (isTouchEvent(e)) {
+      // touch event also scrolls the page, so we need to prevent that
+      e.preventDefault();
+    }
     drag(e, direction, direction === SplitDirection.Horizontal ? minWidths : minHeights);
-  }, [direction, state.isDragging, drag, minWidths, minHeights]);
+  };
+
+  useEventListener("mouseup", onStopDragging, [state.isDragging, stopDragging]);
+  useEventListener("mousemove", onMove, [direction, state.isDragging, drag, minWidths, minHeights]);
+
+  useEventListener("touchend", onStopDragging, [state.isDragging, stopDragging], { condition: isTouchDevice });
+  useEventListener("touchmove", onMove, [direction, state.isDragging, drag, minWidths, minHeights], { condition: isTouchDevice, passive: !isTouchDevice });
 
   // This makes sure that Splitter properly re-renders if parent's size changes dynamically.
   useEffect(function watchParentSize() {
@@ -396,7 +411,7 @@ function Split({
               theme={gutterTheme}
               draggerClassName={draggerClassName}
               direction={direction}
-              onMouseDown={e => handleGutterMouseDown(idx, e)}
+              onDragging={() => handleStartDragging(idx)}
             />
           }
         </React.Fragment>

@@ -1,12 +1,13 @@
 import React from 'react';
-import { SplitDirection, GutterTheme } from './index';
+import type { MouseEvent, TouchEvent } from 'react';
+import { SplitDirection, GutterTheme, isTouchDevice } from './index';
 
 interface GutterProps {
   className?: string;
   theme: GutterTheme;
   draggerClassName?: string;
   direction?: SplitDirection;
-  onMouseDown?: (e: any) => void;
+  onDragging?: (e: MouseEvent | TouchEvent) => void;
 }
 
 const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
@@ -15,7 +16,7 @@ const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
     theme,
     draggerClassName,
     direction = SplitDirection.Vertical,
-    onMouseDown,
+    onDragging,
   },
   ref,
 ) => {
@@ -27,7 +28,8 @@ const Gutter = React.forwardRef<HTMLDivElement, GutterProps>((
       className={containerClass}
       ref={ref}
       dir={direction}
-      onMouseDown={onMouseDown}
+      onMouseDown={onDragging}
+      onTouchStart={isTouchDevice ? onDragging : undefined}
     >
       <div className={draggerClass}/>
     </div>
