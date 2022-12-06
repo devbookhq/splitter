@@ -1,9 +1,14 @@
 import { useEffect } from 'react';
 
-function useEventListener(event: string, handler: (event: any) => void, deps: any[] = [], condition = true) {
+interface UseAddEventListenerOptions extends AddEventListenerOptions {
+  condition: boolean;
+}
+
+function useEventListener(event: string, handler: (event: any) => void, deps: any[] = [], useAddEventListenerOptions: UseAddEventListenerOptions = { condition: true }) {
+  const { condition, ...addEventListenerOptions } = useAddEventListenerOptions
   useEffect(() => {
     if (condition) {
-      window.addEventListener(event, handler);
+      window.addEventListener(event, handler, addEventListenerOptions);
     }
     return () => {
       if (condition) {

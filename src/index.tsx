@@ -13,6 +13,7 @@ import { ActionType } from './state/reducer.actions';
 import reducer, { State } from './state/reducer';
 import getGutterSizes from './utils/getGutterSize';
 import flattenChildren from './utils/flattenChildren';
+import { isTouchEvent } from 'utils/isTouchEvent';
 
 export enum SplitDirection {
   Horizontal = 'Horizontal',
@@ -26,11 +27,11 @@ export enum GutterTheme {
 
 const DefaultMinSize = 16;
 
-const isTouchDevice = typeof window !== 'undefined' && 'ontouchstart' in window;
+export const isTouchDevice = typeof window !== 'undefined' && 'ontouchstart' in window;
 
 // users touch or mouse position
 function getPosition(dir: SplitDirection, e: MouseEvent | TouchEvent) {
-  const targetsValueRef = "clientX" in e ? e : e.changedTouches[0];
+  const targetsValueRef = isTouchEvent(e) ? e.changedTouches[0] : e;
   if (dir === SplitDirection.Horizontal) return targetsValueRef.clientX;
   return targetsValueRef.clientY;
 }
@@ -302,13 +303,12 @@ function Split({
     adjustSize(direction, offset);
   }, [state.isDragging, state.draggingIdx, state.pairs, adjustSize]);
 
-  function handleStartDragging(gutterIdx: number, e: MouseEvent | TouchEvent) {
-    e.preventDefault();
+  function handleStartDragging(gutterIdx: number) {
     calculateSizes(direction, gutterIdx);
     startDragging(direction, gutterIdx);
   }
 
-  const onStop = () => {
+  const onStopDragging = () => {
     if (!state.isDragging) return;
     if (state.draggingIdx === undefined)
       throw new Error(`Cannot calculate sizes after dragging = 'state.draggingIdx' is undefined`);
@@ -316,16 +316,20 @@ function Split({
     stopDragging();
   };
 
-  const onStart = (e: MouseEvent | TouchEvent) => {
+  const onMove = (e: MouseEvent | TouchEvent) => {
     if (!state.isDragging) return;
+    if (isTouchEvent(e)) {
+      // touch event also scrolls the page, so we need to prevent that
+      e.preventDefault();
+    }
     drag(e, direction, direction === SplitDirection.Horizontal ? minWidths : minHeights);
   };
 
-  useEventListener("mouseup", onStop, [state.isDragging, stopDragging]);
-  useEventListener("mousemove", onStart, [direction, state.isDragging, drag, minWidths, minHeights]);
+  useEventListener("mouseup", onStopDragging, [state.isDragging, stopDragging]);
+  useEventListener("mousemove", onMove, [direction, state.isDragging, drag, minWidths, minHeights]);
 
-  useEventListener("touchend", onStop, [state.isDragging, stopDragging], isTouchDevice);
-  useEventListener("touchmove", onStart, [direction, state.isDragging, drag, minWidths, minHeights], isTouchDevice);
+  useEventListener("touchend", onStopDragging, [state.isDragging, stopDragging], { condition: isTouchDevice });
+  useEventListener("touchmove", onMove, [direction, state.isDragging, drag, minWidths, minHeights], { condition: isTouchDevice, passive: !isTouchDevice });
 
   // This makes sure that Splitter properly re-renders if parent's size changes dynamically.
   useEffect(function watchParentSize() {
@@ -407,7 +411,7 @@ function Split({
               theme={gutterTheme}
               draggerClassName={draggerClassName}
               direction={direction}
-              onDragging={e => handleStartDragging(idx, e)}
+              onDragging={() => handleStartDragging(idx)}
             />
           }
         </React.Fragment>
