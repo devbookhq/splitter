@@ -1,5 +1,5 @@
 # Splitter
-Splitter is a React component that allows you to split views into resizable panels. Similar to tabs in Visual Studio Code, for example. It's used in [Devbook](https://usedevbook.com) - A Search Engine for Developers.
+Splitter is a React component that allows you to split views into resizable panels. Similar to tabs in Visual Studio Code, for example.
 Here's a gif of what you can build with Splitter:
 ![](example.gif)
 
