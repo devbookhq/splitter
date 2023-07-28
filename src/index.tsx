@@ -202,7 +202,7 @@ function Split({
       let gutterSize = 0
       if (children.length > 1) {
         const gutter = gutters[isLast ? idx-1 : idx];
-        let gutterSize = gutter.getBoundingClientRect()[direction === SplitDirection.Horizontal ? 'width' : 'height'];
+        gutterSize = gutter.getBoundingClientRect()[direction === SplitDirection.Horizontal ? 'width' : 'height'];
         gutterSize = isFirst || isLast ? gutterSize / 2 : gutterSize;
       }
 
