@@ -360,7 +360,8 @@ function Split({
 
   // Initial setup, runs every time the child views change.
   useEffect(function initialSetup() {
-    if (!state.isReady) return
+    if (!state.isReady) return;
+    if (childRefs.current && !(childRefs.current[0] as any).offsetParent) return;
     // By the time first useEffect runs refs should be already set, unless something really bad happened.
     if (!childRefs.current || !gutterRefs.current) {
       throw new Error(`Cannot create pairs - either variable 'childRefs' or 'gutterRefs' is undefined`);
