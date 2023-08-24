@@ -2,6 +2,7 @@ import React, {
   useEffect,
   useReducer,
   useRef,
+  useState
 } from 'react';
 import type { MouseEvent, TouchEvent } from 'react';
 
@@ -85,7 +86,7 @@ function Split({
   const children = flattenChildren(reactChildren)
 
   const [state, dispatch] = useReducer(reducer, initialState);
-
+  const [style, setStyle] = useState({})
   const containerRef = useRef<HTMLDivElement>(null)
   const childRefs = useRef<HTMLElement[]>([]);
   const gutterRefs = useRef<HTMLElement[]>([]);
@@ -108,6 +109,7 @@ function Split({
     });
 
     const pair = state.pairs[gutterIdx];
+    setStyle({userSelect: 'none'})
     onResizeStarted?.(pair.idx)
 
     // Disable selection.
@@ -152,6 +154,7 @@ function Split({
 
     if (state.draggingIdx === undefined) throw new Error(`Could not reset cursor and user-select because 'state.draggingIdx' is undefined`);
     const pair = state.pairs[state.draggingIdx];
+    setStyle({})
     onResizeFinished?.(pair.idx, allSizes);
 
     // Disable selection.
@@ -395,6 +398,7 @@ function Split({
     <div
       className={'__dbk__container ' + `${direction}`}
       ref={containerRef}
+      style={style}
     >
       {state.isReady && children.map((c, idx) => (
         <React.Fragment key={idx}>
